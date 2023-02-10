@@ -4,8 +4,6 @@
 
 #include "common.h"
 
-enum { NOT_PRESENT, PRESENT };
-
 int
 main(int argc, char *argv[])
 {

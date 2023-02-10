@@ -1,33 +1,14 @@
-/*
-Copyright 2023 Ray Garner
-
-This program is free software: you can redistribute it and/or modify it under 
-the terms of the GNU General Public License as published by the Free Software 
-Foundation, either version 3 of the License, or (at your option) any later 
-version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
-A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with 
-this program. If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEGREES 7
+#include "common.h"
+
 #define STRINGS 6
 #define OCTAVE 12
 #define FRETS OCTAVE
 #define EMPTY -1
 
-enum { SEMITONE = 1, TONE };
-
 enum { SIXTH, FIFTH, FOURTH, THIRD, SECOND, FIRST };
-
-const int IONIAN[DEGREES] = {TONE, TONE, SEMITONE, TONE, TONE, TONE, SEMITONE};
 
 void init_string(int[FRETS]);
 void print_string(int[FRETS]);
@@ -77,15 +58,59 @@ write_string(int string[FRETS], int start, int m)
 
 	while (string[f] == EMPTY) {
 		string[f] = d;
-		f = (f + IONIAN[(d + m) % DEGREES]) % FRETS;
+		f = (f + MAJOR_SCALE[(d + m) % DEGREES]) % FRETS;
 		d = (d + 1) % DEGREES;
 	}
 }
 
 int
+note_to_fret(int note)
+{
+	/* E (4) = 0 */
+	note -= 4;
+	if (note < 0)
+		return FRETS + note;
+	else
+		return note;
+}
+
+void
+display_mode(int f, int m)
+{
+	int fretboard[STRINGS][FRETS], s;
+
+	for (s = 0; s < STRINGS; s++)
+		init_string(fretboard[s]);
+	write_string(fretboard[SIXTH], f+7*0, m);
+	write_string(fretboard[FIFTH], f+7*1, m);
+	write_string(fretboard[FOURTH], f+7*2, m);
+	write_string(fretboard[THIRD], f+7*3, m);
+	write_string(fretboard[SECOND], f+7*4+1, m);
+	write_string(fretboard[FIRST], f+7*5+1, m);
+	for (s = FIRST; s >= SIXTH; s--)
+		print_string(fretboard[s]);
+	putchar('\n');
+	print_fret_nums(FRETS * 2);
+}
+
+int
 main(int argc, char *argv[])
 {
-	int fretboard[STRINGS][FRETS], s, f, m;
+	int fretboard[STRINGS][FRETS], s, f, m, key_field[TONES][DEGREES], n;
+
+	if (argv[1][0] == '-') {
+		init_key_field(key_field, NOT_PRESENT);
+		read_key_list(key_field, PRESENT);
+		for (n = 0; n < TONES; n++) {
+			for (m = 0; m < DEGREES; m++) {
+				if (key_field[n][m] == PRESENT) {
+					display_mode(note_to_fret(n), m);
+					printf("\n\n");
+				}
+			}
+		}
+		return 0;
+	}
 
 	if (argc < 3) {
 		printf("Please give start fret and mode as args\n");

@@ -2,6 +2,8 @@
 #define TONES   12
 #define BUFLEN  16
 
+enum { NOT_PRESENT, PRESENT };
+
 enum { IONIAN, DORIAN, PHYRIGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN };
 
 enum {

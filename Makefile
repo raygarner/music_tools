@@ -29,4 +29,4 @@ cf:
 	$(CC) $(CFLAGS) $@.c -o $@
 
 fb:
-	$(CC) $(CFLAGS) $@.c -o $@
+	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@

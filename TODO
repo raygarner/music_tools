@@ -1,24 +1,10 @@
-create makefile
-link various ideas together
-let md work on a limited amount of modes
-	think of it like this: it currently takes input but the input is just
-	the list of all the possible modes
-	if it reads any input then it will only operate on those modes specified
-	otherwise use all modes like normal
 create interval program
 	similar to md, prints a list of modes
 	takes intervals eg major third, minor sixth as args and prints all modes
 	with meet those requirements
 	like md it can take input specifying which modes to consider otherwise
 	it just considers all
-allow chord program to work with other systems
-use fb as ui end point to pipe data into to display it
 use cf as ui end point to pipe data to to display it
-create makefile
-create git repo
 write program to take unsorted musical data such as modes or chords and return
 it as a list sorted by 'tension' value of each item
-put common functions in .h file and include in each of the programs
 add index/id to each line of output so can track data flow
-dont use a key matrix for crd just print output while reading
-	write common function to read one key to make this easy

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "common.h"
 
@@ -97,8 +98,10 @@ int
 main(int argc, char *argv[])
 {
 	int fretboard[STRINGS][FRETS], s, f, m, key_field[TONES][DEGREES], n;
+	char c, buf[BUFLEN];
 
 	if (argv[1][0] == '-') {
+		/*
 		init_key_field(key_field, NOT_PRESENT);
 		read_key_list(key_field, PRESENT);
 		for (n = 0; n < TONES; n++) {
@@ -110,7 +113,22 @@ main(int argc, char *argv[])
 			}
 		}
 		return 0;
+		*/
+
+		while ((c = getchar()) != EOF) {
+			if (isspace(c))
+				continue;
+			n = read_note(c);
+			c = getchar();
+			n += read_accidental(c);
+			scanf("%s", buf);
+			m = read_mode(buf);
+			display_mode(note_to_fret(n), m);
+			printf("\n\n");
+		}
+		return 0;
 	}
+
 
 	if (argc < 3) {
 		printf("Please give start fret and mode as args\n");

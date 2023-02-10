@@ -86,6 +86,6 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 		note += read_accidental(c);
 		scanf("%s", buf);
 		mode = read_mode(buf);
-		key_field[note][mode] = val; /* mark this mode as allowed */
+		key_field[note][mode] = val;
 	}
 }

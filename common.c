@@ -10,8 +10,8 @@ const int MAJOR_SCALE[DEGREES] = { TONE, TONE, SEMITONE, TONE, TONE, TONE,
 const char INTERVAL[2] = { 'h', 'w' };
 const char *MODES[DEGREES] = { "Ionian", "Dorian", "Phrygian", "Lydian", 
                                "Mixolydian", "Aeolian", "Locrian" };
-const char *NOTES[TONES] = { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab",
-                             "A", "Bb", "B" };
+const char *NOTES[TONES] = { "Cn", "C+", "Dn", "E-", "En", "Fn", "F+", "Gn", "A-",
+                             "An", "B-", "Bn" };
 
 int
 read_accidental(char a)

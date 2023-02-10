@@ -78,10 +78,10 @@ main(int argc, char *argv[])
 		while ((c = getchar()) != EOF) {
 			if (isspace(c))
 				continue;
-			printf("c = %c\n", c);
 			note = read_note(c);
+			c = getchar();
+			note += read_accidental(c);
 			scanf("%s", buf);
-			printf("buf = %s\n", buf);
 			mode = read_mode(buf);
 			key_freq[note][mode] = 0; /* mark this mode as allowed */
 		}

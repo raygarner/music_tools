@@ -1,7 +1,8 @@
 .POSIX:
 
 DEST = /usr/bin
-EXES = md crd
+EXES = md crd cf fb
+COMMON = common.c
 
 all: $(EXES)
 
@@ -19,8 +20,13 @@ uninstall:
 	@$(foreach EXE,$(EXES), rm -f $(DEST)/$(EXE))
 
 md:
-	$(CC) $(CFLAGS) $@.c -o $@
+	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@
 
 crd:
+	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@
+
+cf:
 	$(CC) $(CFLAGS) $@.c -o $@
 
+fb:
+	$(CC) $(CFLAGS) $@.c -o $@

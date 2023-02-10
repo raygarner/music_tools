@@ -1,95 +1,14 @@
-/*
-Copyright 2023 Ray Garner
-
-This program is free software: you can redistribute it and/or modify it under 
-the terms of the GNU General Public License as published by the Free Software 
-Foundation, either version 3 of the License, or (at your option) any later 
-version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
-A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with 
-this program. If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
-#define DEGREES  7
-#define TONES    12
+#include "common.h"
 
-enum { IONIAN, DORIAN, PHYRIGIAN, LYDIAN, MIXOLYDIAN, AEOLIAN, LOCRIAN };
-
-enum {
-	SEMITONE = 1,
-	TONE = 2
-};
-
-enum {
-	C = 0,
-	D = 2,
-	E = 4,
-	F = 5,
-	G = 7,
-	A = 9,
-	B = 11
-};
-
-const int MAJOR_SCALE[DEGREES] = { TONE, TONE, SEMITONE, TONE, TONE, TONE, 
-                                   SEMITONE };
-const char INTERVAL[2] = { 'h', 'w' };
-const char *MODES[DEGREES] = { "Ionian", "Dorian", "Phrygian", "Lydian", 
-                               "Mixolydian", "Aeolian", "Locrian" };
-const char *NOTES[TONES] = { "C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab",
-                             "A", "Bb", "B" };
-
-int read_accidental(char);
-int read_note(char);
 void check_relative_modes(int, int, int[TONES][DEGREES]);
-void init_key_freq(int[TONES][DEGREES]);
+void init_key_freq(int[TONES][DEGREES], int);
 void print_matching_keys(const int[TONES][DEGREES], int);
 int process_notes(const char[], int, int[TONES][DEGREES]);
-
-int
-read_accidental(char a)
-{
-	switch (a) {
-	case '+':
-		return 1;
-	case '-':
-		return -1;
-	case 'n':
-		return 0;
-	}
-	printf("Invalid input format\n");
-	exit(-1);
-}
-
-int
-read_note(char n)
-{
-	switch (n) {
-	case 'c':
-		return C;
-	case 'd':
-		return D;
-	case 'e':
-		return E;
-	case 'f':
-		return F;
-	case 'g':
-		return G;
-	case 'a':
-		return A;
-	case 'b':
-		return B;
-	}
-	printf("Invalid input format\n");
-	exit(-1);
-}
 
 void
 check_relative_modes(int tonic, int mode, int key_freq[TONES][DEGREES])
@@ -104,13 +23,13 @@ check_relative_modes(int tonic, int mode, int key_freq[TONES][DEGREES])
 }
 
 void
-init_key_freq(int key_freq[TONES][DEGREES])
+init_key_freq(int key_freq[TONES][DEGREES], int def)
 {
 	int n, m;
 	
 	for (n = 0; n < TONES; n++)
 		for (m = 0; m < DEGREES; m++)
-			key_freq[n][m] = 0;
+			key_freq[n][m] = def;
 }
 
 void
@@ -144,14 +63,29 @@ process_notes(const char notes[], int len, int key_freq[TONES][DEGREES])
 int
 main(int argc, char *argv[])
 {
-	int key_freq[TONES][DEGREES], note_count;
+	int key_freq[TONES][DEGREES], note_count, note, mode;
+	char c, buf[BUFLEN];
 
 	if (argc < 2) {
 		printf("Please pass notes as args\n");
 		printf("eg: md cnf+\n");
 		return -1;
 	}
-	init_key_freq(key_freq);
+	if (argc > 2 && argv[2][0] == '-') {
+		init_key_freq(key_freq, 0); /* all keys are allowed */
+	} else {
+		init_key_freq(key_freq, -999);
+		while ((c = getchar()) != EOF) {
+			if (isspace(c))
+				continue;
+			printf("c = %c\n", c);
+			note = read_note(c);
+			scanf("%s", buf);
+			printf("buf = %s\n", buf);
+			mode = read_mode(buf);
+			key_freq[note][mode] = 0; /* mark this mode as allowed */
+		}
+	}
 	note_count = process_notes(argv[1], strlen(argv[1]), key_freq);
 	print_matching_keys(key_freq, note_count);
 	return 0;

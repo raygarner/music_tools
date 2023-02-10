@@ -27,5 +27,7 @@ extern const char *NOTES[TONES];
 int read_accidental(char);
 int read_note(char);
 int read_mode(const char *);
+void init_key_field(int[TONES][DEGREES], int);
+void read_key_list(int[TONES][DEGREES], int);
 
 

@@ -6,7 +6,6 @@
 #include "common.h"
 
 void check_relative_modes(int, int, int[TONES][DEGREES]);
-void init_key_freq(int[TONES][DEGREES], int);
 void print_matching_keys(const int[TONES][DEGREES], int);
 int process_notes(const char[], int, int[TONES][DEGREES]);
 
@@ -20,16 +19,6 @@ check_relative_modes(int tonic, int mode, int key_freq[TONES][DEGREES])
 		current_note = \
 		    (current_note + MAJOR_SCALE[(m+mode)%DEGREES]) % TONES;
 	}
-}
-
-void
-init_key_freq(int key_freq[TONES][DEGREES], int def)
-{
-	int n, m;
-	
-	for (n = 0; n < TONES; n++)
-		for (m = 0; m < DEGREES; m++)
-			key_freq[n][m] = def;
 }
 
 void
@@ -72,19 +61,10 @@ main(int argc, char *argv[])
 		return -1;
 	}
 	if (argc > 2 && argv[2][0] == '-') {
-		init_key_freq(key_freq, 0); /* all keys are allowed */
+		init_key_field(key_freq, 0); /* all keys are allowed */
 	} else {
-		init_key_freq(key_freq, -999);
-		while ((c = getchar()) != EOF) {
-			if (isspace(c))
-				continue;
-			note = read_note(c);
-			c = getchar();
-			note += read_accidental(c);
-			scanf("%s", buf);
-			mode = read_mode(buf);
-			key_freq[note][mode] = 0; /* mark this mode as allowed */
-		}
+		init_key_field(key_freq, -999);
+		read_key_list(key_freq, 0);
 	}
 	note_count = process_notes(argv[1], strlen(argv[1]), key_freq);
 	print_matching_keys(key_freq, note_count);

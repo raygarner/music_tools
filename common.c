@@ -61,3 +61,31 @@ read_mode(const char *input)
 			return m;
 	}
 }
+
+void
+init_key_field(int key_field[TONES][DEGREES], int def)
+{
+	int n, m;
+	
+	for (n = 0; n < TONES; n++)
+		for (m = 0; m < DEGREES; m++)
+			key_field[n][m] = def;
+}
+
+void
+read_key_list(int key_field[TONES][DEGREES], int val)
+{
+	char c, buf[BUFLEN];
+	int note, mode;
+
+	while ((c = getchar()) != EOF) {
+		if (isspace(c))
+			continue;
+		note = read_note(c);
+		c = getchar();
+		note += read_accidental(c);
+		scanf("%s", buf);
+		mode = read_mode(buf);
+		key_field[note][mode] = val; /* mark this mode as allowed */
+	}
+}

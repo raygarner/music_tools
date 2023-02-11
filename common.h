@@ -14,6 +14,7 @@ enum {
 enum { FALSE, TRUE };
 
 enum {
+	X = -1, /* wildcard */
 	C = 0,
 	D = 2,
 	E = 4,

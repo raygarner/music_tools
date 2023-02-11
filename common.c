@@ -32,6 +32,8 @@ int
 read_note(char n)
 {
 	switch (tolower(n)) {
+	case 'x':
+		return X;
 	case 'c':
 		return C;
 	case 'd':
@@ -76,7 +78,7 @@ void
 read_key_list(int key_field[TONES][DEGREES], int val)
 {
 	char c, buf[BUFLEN];
-	int note, mode;
+	int note, mode, i;
 
 	while ((c = getchar()) != EOF) {
 		if (isspace(c))
@@ -86,6 +88,11 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 		note += read_accidental(c);
 		scanf("%s", buf);
 		mode = read_mode(buf);
-		key_field[note][mode] = val;
+		if (note == X) {
+			for (i = 0; i < TONES; i++)
+				key_field[i][mode]= val;
+		} else {
+			key_field[note][mode] = val;
+		}
 	}
 }

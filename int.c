@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 	}
 	for (m = 0; m < DEGREES; m++) {
 		if (modes[m] == len)
-			printf("x %s\n", MODES[m]);
+			printf("xn %s\n", MODES[m]);
 	}
 	return 0;
 }

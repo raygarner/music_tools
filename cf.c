@@ -82,7 +82,6 @@ print_key_sig(int flat_key, int altered[DEGREES])
 	print_empty_line();
 }
 
-/* TODO: fix this for flat keys */
 int*
 note_status(int flat_key, int accidentals)
 {

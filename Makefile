@@ -26,7 +26,7 @@ crd:
 	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@
 
 cf:
-	$(CC) $(CFLAGS) $@.c -o $@
+	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@
 
 fb:
 	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@

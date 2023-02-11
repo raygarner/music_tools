@@ -1,13 +1,13 @@
-create interval program
-	similar to md, prints a list of modes
-	takes intervals eg major third, minor sixth as args and prints all modes
-	with meet those requirements
-	like md it can take input specifying which modes to consider otherwise
-	it just considers all
 use cf as ui end point to pipe data to to display it
 write program to take unsorted musical data such as modes or chords and return
 it as a list sorted by 'tension' value of each item
 add index/id to each line of output so can track data flow
 documentation
-x <mode> to signifiy inclusion of every that mode with every possible root
 hard code degree vals
+make int allow user to specify which notes are natural 
+use proper accidentals for keys
+flag to input notes via stdin for md
+delete unused variables
+shorted lines over 79 chars wide
+add function prototypes
+make sure c- isnt -1

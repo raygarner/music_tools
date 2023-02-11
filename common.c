@@ -86,6 +86,7 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 		note = read_note(c);
 		c = getchar();
 		note += read_accidental(c);
+		note %= TONES;
 		scanf("%s", buf);
 		mode = read_mode(buf);
 		if (note == X) {

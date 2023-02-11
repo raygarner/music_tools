@@ -100,54 +100,15 @@ main(int argc, char *argv[])
 	int fretboard[STRINGS][FRETS], s, f, m, key_field[TONES][DEGREES], n;
 	char c, buf[BUFLEN];
 
-	if (argv[1][0] == '-') {
-		/*
-		init_key_field(key_field, NOT_PRESENT);
-		read_key_list(key_field, PRESENT);
-		for (n = 0; n < TONES; n++) {
-			for (m = 0; m < DEGREES; m++) {
-				if (key_field[n][m] == PRESENT) {
-					display_mode(note_to_fret(n), m);
-					printf("\n\n");
-				}
-			}
-		}
-		return 0;
-		*/
-
-		while ((c = getchar()) != EOF) {
-			if (isspace(c))
-				continue;
-			n = (read_note(c) + read_accidental(getchar())) % TONES;
-			scanf("%s", buf);
-			m = read_mode(buf);
-			display_mode(note_to_fret(n), m);
-			printf("\n\n");
-		}
-		return 0;
+	while ((c = getchar()) != EOF) {
+		if (isspace(c))
+			continue;
+		n = (read_note(c) + read_accidental(getchar())) % TONES;
+		scanf("%s", buf);
+		m = read_mode(buf);
+		display_mode(note_to_fret(n), m);
+		printf("\n\n");
 	}
-
-
-	if (argc < 3) {
-		printf("Please give start fret and mode as args\n");
-		printf("eg: fb 5 6\n");
-		return 1;
-	} else {
-		m = atoi(argv[2]) - 1;
-		f = atoi(argv[1]);
-	}
-	for (s = 0; s < STRINGS; s++)
-		init_string(fretboard[s]);
-	write_string(fretboard[SIXTH], f+7*0, m);
-	write_string(fretboard[FIFTH], f+7*1, m);
-	write_string(fretboard[FOURTH], f+7*2, m);
-	write_string(fretboard[THIRD], f+7*3, m);
-	write_string(fretboard[SECOND], f+7*4+1, m);
-	write_string(fretboard[FIRST], f+7*5+1, m);
-	for (s = FIRST; s >= SIXTH; s--)
-		print_string(fretboard[s]);
-	putchar('\n');
-	print_fret_nums(FRETS * 2);
 	return 0;
 }
 

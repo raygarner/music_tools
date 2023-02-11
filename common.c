@@ -96,3 +96,16 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 		}
 	}
 }
+
+void
+print_matching_keys(const int key_freq[TONES][DEGREES], int len)
+{
+	int n, m;
+
+	for (n = 0; n < TONES; n++) {
+		for (m = 0; m < DEGREES; m++) {
+			if (key_freq[n][m] == len)
+				printf("%2s %s\n", NOTES[n], MODES[m]);
+		}
+	}
+}

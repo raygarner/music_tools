@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,22 +24,27 @@ is_degree_flat(int d, int m)
 int
 main(int argc, char *argv[])
 {
-	int m, target = 3, n, v = 0, modes[DEGREES], i, len, d;
-	char tmp;
+	int m, target = 3, n, v = 0, modes[DEGREES], i, len, d, 
+	    key_field[TONES][DEGREES];
+	char tmp, c, buf[BUFLEN];
 	
+	if (argc > 2 && argv[2][0] == '-') {
+		init_key_field(key_field, 0);
+	} else {
+		init_key_field(key_field, -999);
+		read_key_list(key_field, 0);
+	}
 	len = strlen(argv[1]);
-	for (m = 0; m < DEGREES; m++)
-		modes[m] = 0;
-	for (i = 0; i < len; i++) {
-		for (m = 0; m < DEGREES; m++) {
+	for (i = 0; i < len; i++) { /* for each flattened degree */
+		for (m = 0; m < DEGREES; m++) { /* for each mode */
 			tmp = argv[1][i];
-			if (is_degree_flat(atoi(&tmp), m))
-				modes[m]++;
+			if (is_degree_flat(atoi(&tmp), m)) {
+				/* increment all keys of this mode */
+				for (n = 0; n < TONES; n++)
+					key_field[n][m]++;
+			}
 		}
 	}
-	for (m = 0; m < DEGREES; m++) {
-		if (modes[m] == len)
-			printf("xn %s\n", MODES[m]);
-	}
+	print_matching_keys(key_field, len);
 	return 0;
 }

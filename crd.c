@@ -51,9 +51,7 @@ main(int argc, char *argv[])
 		while ((c = getchar()) != EOF) {
 			if (isspace(c))
 				continue;
-			note = read_note(c);
-			c = getchar();
-			note += read_accidental(c);
+			note = (read_note(c) + read_accidental(getchar())) % TONES;
 			scanf("%s", buf);
 			mode = read_mode(buf);
 			current_note = note;

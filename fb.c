@@ -118,9 +118,7 @@ main(int argc, char *argv[])
 		while ((c = getchar()) != EOF) {
 			if (isspace(c))
 				continue;
-			n = read_note(c);
-			c = getchar();
-			n += read_accidental(c);
+			n = (read_note(c) + read_accidental(getchar())) % TONES;
 			scanf("%s", buf);
 			m = read_mode(buf);
 			display_mode(note_to_fret(n), m);

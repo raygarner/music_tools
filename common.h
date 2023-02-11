@@ -11,6 +11,8 @@ enum {
 	TONE = 2
 };
 
+enum { FALSE, TRUE };
+
 enum {
 	C = 0,
 	D = 2,

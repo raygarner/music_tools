@@ -1,7 +1,7 @@
 .POSIX:
 
 DEST = /usr/bin
-EXES = md crd cf fb
+EXES = md crd cf fb int
 COMMON = common.c
 
 all: $(EXES)
@@ -29,4 +29,7 @@ cf:
 	$(CC) $(CFLAGS) $@.c -o $@
 
 fb:
+	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@
+
+int:
 	$(CC) $(CFLAGS) $@.c $(COMMON) -o $@

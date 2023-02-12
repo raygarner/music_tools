@@ -4,8 +4,6 @@
 
 #include "common.h"
 
-//#define KEYS  12
-//#define TONES 7
 #define WIDTH 16
 
 enum { FIRST, SECOND, THIRD, FOURTH, FIFTH, SIXTH, SEVENTH };
@@ -116,11 +114,10 @@ relative_ionian(int n, int m)
 {
 	int i;
 
-	for (i = m; i > 0; i--) {
+	m = m == 0 ? 6 : m-1;
+	for (i = m; i >= 0; i--) {
 		n -= MAJOR_SCALE[m];
-		m--;
-		if (m == -1)
-			m = 6;
+		m = m == 0 ? 6 : m-1;
 	}
 	return n < 0 ? TONES + n : n ;
 }
@@ -166,7 +163,6 @@ main(int argc, char *argv[])
 			printf("printing key signature\n");
 			print_key_sig(flat_key, altered);
 			free(altered);
-			//display_mode(note_to_fret(n), m);
 			printf("\n\n");
 		}
 		printf("F = %d\n", F);

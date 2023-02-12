@@ -11,3 +11,4 @@ delete unused variables
 shorted lines over 79 chars wide
 add function prototypes
 make sure c- isnt -1
+fix cf weird cases

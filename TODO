@@ -1,4 +1,3 @@
-wildcard compatability for crd
 write program to take unsorted musical data such as modes or chords and return it as a list sorted by 'tension' value of each item
 add index/id to each line of output so can track data flow
 documentation

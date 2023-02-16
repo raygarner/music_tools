@@ -34,14 +34,19 @@ main(int argc, char *argv[])
 			}
 		}
 	} else {
-		/* TODO: handle wildcard input */
 		while ((c = getchar()) != EOF) {
 			if (isspace(c))
 				continue;
 			note = read_tone(c, getchar());
 			scanf("%s", buf);
 			mode = read_mode(buf);
-			apply_bitfield(presence, mode, note);
+			if (note == X)
+				for (note = 0; note < TONES; note++) {
+					apply_bitfield(presence, mode, note);
+					putchar('\n');
+				}
+			else
+				apply_bitfield(presence, mode, note);
 			putchar('\n');
 		}
 	}

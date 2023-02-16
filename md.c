@@ -6,18 +6,16 @@
 #include "common.h"
 
 void check_relative_modes(int, int, int[TONES][DEGREES]);
-void print_matching_keys(const int[TONES][DEGREES], int);
 int process_notes(const char[], int, int[TONES][DEGREES]);
 
 void
 check_relative_modes(int tonic, int mode, int key_freq[TONES][DEGREES])
 {
-	int current_note = tonic, m;
+	int current_note = tonic, d;
 	
-	for (m = 0; m < DEGREES; m++) {
-		key_freq[current_note][(m+mode)%DEGREES]++;
-		current_note = \
-		    (current_note + MAJOR_SCALE[(m+mode)%DEGREES]) % TONES;
+	for (d = 0; d < DEGREES; d++) {
+		key_freq[current_note][(d+mode)%DEGREES]++;
+		current_note = step(d, current_note, mode);
 	}
 }
 
@@ -27,7 +25,7 @@ process_notes(const char notes[], int len, int key_freq[TONES][DEGREES])
 	int note_count = 0, note, m, i = 0;
 
 	while (i < len) {
-		note = (read_note(notes[i]) + read_accidental(notes[i+1])) % TONES;
+		note = read_tone(notes[i], notes[i+1]);
 		note_count++;
 		for (m = 0; m < DEGREES; m++)
 			check_relative_modes(note, m, key_freq);

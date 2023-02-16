@@ -5,6 +5,9 @@
 
 #include "common.h"
 
+int degree_val(int, int);
+int is_degree_flat(int, int);
+
 int
 degree_val(int d, int m)
 {

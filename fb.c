@@ -15,6 +15,7 @@ void init_string(int[FRETS]);
 void print_string(int[FRETS]);
 void print_fret_nums(int);
 void write_string(int[FRETS], int, int);
+int note_to_fret(int);
 
 void
 init_string(int string[FRETS])
@@ -59,7 +60,7 @@ write_string(int string[FRETS], int start, int m)
 
 	while (string[f] == EMPTY) {
 		string[f] = d;
-		f = (f + MAJOR_SCALE[(d + m) % DEGREES]) % FRETS;
+		f = step(d, f, m);
 		d = (d + 1) % DEGREES;
 	}
 }
@@ -103,7 +104,7 @@ main(int argc, char *argv[])
 	while ((c = getchar()) != EOF) {
 		if (isspace(c))
 			continue;
-		n = (read_note(c) + read_accidental(getchar())) % TONES;
+		n = read_tone(c, getchar());
 		scanf("%s", buf);
 		m = read_mode(buf);
 		display_mode(note_to_fret(n), m);

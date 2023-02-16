@@ -28,6 +28,8 @@ void print_key_sig(int, int[DEGREES]);
 int *note_status(int, int);
 int is_flat_key(int);
 int calc_accidentals(int, int);
+int relative_ionian(int, int);
+int note_to_cf(int);
 
 int
 spacing(int flat_key, int degree)
@@ -109,6 +111,7 @@ calc_accidentals(int flat_key, int key)
 	return flat_key ? TONES - key : key;
 }
 
+/* TODO: use clock_mod or stepdown function here */
 int
 relative_ionian(int n, int m)
 {
@@ -135,16 +138,11 @@ main(int argc, char *argv[])
 	char c, buf[BUFLEN];
 
 	if (argc < 2) {
-		/*
-		printf("Enter a number for the circle: cf <n>\n");
-		printf("eg: cf 5\n");
-		return -1;
-		*/
 		/* read modes from stdin here */
 		while ((c = getchar()) != EOF) {
 			if (isspace(c))
 				continue;
-			n = (read_note(c) + read_accidental(getchar())) % 12;
+			n = read_tone(c, getchar());
 			printf("n = %d\n", n);
 			scanf("%s", buf);
 			m = read_mode(buf);

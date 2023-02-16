@@ -1,0 +1,89 @@
+Abstract
+========
+AKA 'Unix style computer aided composition'- CLI C programs providing music
+functions which can be connected with pipes
+
+Build:
+$ make
+
+Install:
+$ sudo make install
+
+Uninstall:
+$ sudo make uninstall
+
+
+md
+==
+Takes a list of notes and returns all modes which contain all of the notes.
+Can be piped into so it only works on a limited set of modes, otherwise supply
+the '-' argument and all modes will be considered.
+
+$ md cnf+ -
+Cn Lydian
+Cn Locrian
+C+ Ionian
+Dn Mixolydian
+E- Dorian
+En Aeolian
+Fn Phrygian
+F+ Lydian
+F+ Locrian
+Gn Ionian
+A- Mixolydian
+An Dorian
+B- Aeolian
+Bn Phrygian
+$ echo "An Dorian Cn Ionian Gn Ionian" | md cnf+
+Gn Ionian
+An Dorian
+$ echo "Xx Lydian" | md cnf+
+Cn Lydian
+F+ Lydian
+
+
+int
+===
+Takes a list of scale degrees which should be flattened in relation to the
+major scale. Can be piped into so it only works on that limited set of modes
+otherwise pass '-' to consider all modes
+
+$ int 2367 -
+Cn Phrygian
+Cn Locrian
+C+ Phrygian
+C+ Locrian
+Dn Phrygian
+Dn Locrian
+E- Phrygian
+E- Locrian
+En Phrygian
+En Locrian
+Fn Phrygian
+Fn Locrian
+F+ Phrygian
+F+ Locrian
+Gn Phrygian
+Gn Locrian
+A- Phrygian
+A- Locrian
+An Phrygian
+An Locrian
+B- Phrygian
+B- Locrian
+Bn Phrygian
+Bn Locrian
+$ echo "Cn Locrian An Aeolian B- Phrygian" | int 2367
+Cn Locrian
+B- Phrygian
+
+
+crd
+===
+Takes 7 bits, one for each degree of the scale. 1 means show that note of the
+scale and 0 means dont. Reads modes from stdin.
+
+$ echo "An Ionian B- Aeolian" | crd 1010100
+An C+ En
+B- C+ Fn
+

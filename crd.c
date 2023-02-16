@@ -5,6 +5,18 @@
 
 #include "common.h"
 
+void
+apply_bitfield(const int presence[DEGREES], int m, int n)
+{
+	int d;
+
+	for (d = 0; d < DEGREES; d++) {
+		if (presence[d])
+			printf("%s ", NOTES[n]);
+		n = step(d, n, m);
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -14,52 +26,22 @@ main(int argc, char *argv[])
 
 	for (i = 0; i < 7; i++)
 		presence[i] = argv[1][i] == '1' ? PRESENT : NOT_PRESENT;
-	/*
-	if (argc > 2 && argv[2][0] == '-') {
-		init_key_field(allowed_keys, PRESENT);
-	} else { 
-		init_key_field(allowed_keys, NOT_PRESENT);
-		read_key_list(allowed_keys, PRESENT);
-	}
-	for (n = 0; n < TONES; n++) {
-		for (m = 0; m < DEGREES; m++) {
-			if (allowed_keys[n][m]) {
-				current_note = n;
-				for (d = 0; d < DEGREES; d++) {
-					if (presence[d])
-						printf("%s ", NOTES[current_note]);
-					current_note = (current_note + MAJOR_SCALE[(m+d) % DEGREES]) % TONES;
-				}
-				putchar('\n');
-			}
-		}
-	}
-	*/
 	if (argc > 2 && argv[2][0] == '-') {
 		for (n = 0; n < TONES; n++) {
 			for (m = 0; m < DEGREES; m++) {
-				current_note = n;
-				for (d = 0; d < DEGREES; d++) {
-					if (presence[d])
-						printf("%s ", NOTES[current_note]);
-					current_note = (current_note + MAJOR_SCALE[(m+d) % DEGREES]) % TONES;
-				}
+				apply_bitfield(presence, m, n);
 				putchar('\n');
 			}
 		}
 	} else {
+		/* TODO: handle wildcard input */
 		while ((c = getchar()) != EOF) {
 			if (isspace(c))
 				continue;
-			note = (read_note(c) + read_accidental(getchar())) % TONES;
+			note = read_tone(c, getchar());
 			scanf("%s", buf);
 			mode = read_mode(buf);
-			current_note = note;
-			for (d = 0; d < DEGREES; d++) {
-				if (presence[d])
-					printf("%s ", NOTES[current_note]);
-				current_note = (current_note + MAJOR_SCALE[(mode+d) % DEGREES]) % TONES;
-			}
+			apply_bitfield(presence, mode, note);
 			putchar('\n');
 		}
 	}

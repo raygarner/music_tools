@@ -24,6 +24,11 @@ enum {
 	B = 11
 };
 
+enum {
+	DOWN = -1,
+	UP = 1
+};
+
 extern const int MAJOR_SCALE[DEGREES];
 extern const char INTERVAL[2];
 extern const char *MODES[DEGREES];
@@ -31,7 +36,10 @@ extern const char *NOTES[TONES];
 
 int read_accidental(char);
 int read_note(char);
+int read_tone(char, char);
 int read_mode(const char *);
+int clock_mod(int, int);
+int step(int, int, int);
 void init_key_field(int[TONES][DEGREES], int);
 void read_key_list(int[TONES][DEGREES], int);
 void print_matching_keys(const int[TONES][DEGREES], int);

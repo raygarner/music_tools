@@ -21,7 +21,8 @@ read_accidental(char a)
 		return 1;
 	case '-':
 		return -1;
-	case 'n':
+	case 'n': /* fallthrough */
+	case 'x':
 		return 0;
 	}
 	printf("Invalid input format for accidental\n");
@@ -54,6 +55,12 @@ read_note(char n)
 }
 
 int
+read_tone(char n, char a)
+{
+	return clock_mod((read_note(n) + read_accidental(a)), TONES);
+}
+
+int
 read_mode(const char *input)
 {
 	int m;
@@ -74,6 +81,21 @@ init_key_field(int key_field[TONES][DEGREES], int def)
 			key_field[n][m] = def;
 }
 
+int
+clock_mod(int x, int mod)
+{
+	if (x == X)
+		return x;
+	return x < 0 ? mod - (abs(x) % mod) : x % mod;
+}
+
+int
+step(int degree, int note, int mode)
+{
+	return (note + MAJOR_SCALE[(degree + mode) % DEGREES]) % TONES;
+}
+
+
 void
 read_key_list(int key_field[TONES][DEGREES], int val)
 {
@@ -83,10 +105,7 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 	while ((c = getchar()) != EOF) {
 		if (isspace(c))
 			continue;
-		note = read_note(c);
-		c = getchar();
-		note += read_accidental(c);
-		note %= TONES;
+		note = read_tone(c, getchar());
 		scanf("%s", buf);
 		mode = read_mode(buf);
 		if (note == X) {

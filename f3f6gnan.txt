@@ -1,0 +1,15 @@
+C+ Locrian
+Dn Phrygian
+Dn Aeolian
+En Phrygian
+En Aeolian
+En Locrian
+F+ Phrygian
+F+ Locrian
+Gn Aeolian
+An Phrygian
+An Aeolian
+An Locrian
+Bn Phrygian
+Bn Aeolian
+Bn Locrian

@@ -1,3 +1,15 @@
+integrate unix program to randomise the order of its args
+	this is to switch up output from crd
+	shows integration with general unix tools
+VOICE GENERATOR
+	can take a list of notes (eg output from crd) and generate a second voice to be played at the same time
+	this way we can evaluate chord transition frequency (chords can be implied with just 2 voices) and also melody interval frequency
+	parallel 3rds = good
+	parallel 5ths = bad
+	contrary motion = good
+	root inversion = good
+	first inversion = good
+	second inversion = bad
 use - to specify reading from STDIN, not the other way round
 write program to take unsorted musical data such as modes or chords and return it as a list sorted by 'tension' value of each item
 add index/id to each line of output so can track data flow

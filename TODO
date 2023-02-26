@@ -1,3 +1,4 @@
+IMPORTANT: use is_correct_accidental key to use correct symbols
 integrate unix program to randomise the order of its args
 	this is to switch up output from crd
 	shows integration with general unix tools
@@ -16,7 +17,6 @@ add index/id to each line of output so can track data flow
 documentation
 hard code degree vals
 make int allow user to specify which notes are natural 
-use proper accidentals for keys
 flag to input notes via stdin for md
 delete unused variables
 shorted lines over 79 chars wide

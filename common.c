@@ -146,3 +146,49 @@ print_mode(int m)
 	*/
 	printf("%s", MODES[m]);
 }
+
+int
+is_diatonic(int note, int root, int mode)
+{
+	int d, cn = root;
+
+	for (d = 0; d < DEGREES; d++) {
+		if (cn == note)
+			return TRUE;
+		cn = step(d, cn, mode);
+	}
+	return FALSE;
+}
+
+int
+is_accidental(int note)
+{
+	return !is_diatonic(note, C, IONIAN);
+}
+
+int
+is_correct_accidental(int root, int mode, int accidental)
+{
+	int d, cn = root, clasha, clashb;
+
+	if (accidental == FLAT) {
+		clasha = C;
+		clashb = F;
+	} else {
+		clasha = B;
+		clashb = E;
+	}
+
+	printf("accidental = %d\n", accidental);
+	for (d = 0; d < DEGREES; d++) {
+		if (is_accidental(cn) && \
+		is_diatonic(clock_mod(cn+accidental*-1, TONES), root, mode) && \
+		is_accidental(clock_mod(cn+accidental*-2, TONES))) {
+			printf("error: n = %d\tr = %d\tm = %d\n", cn, root, mode);
+			printf("rival = %d\n", clock_mod(cn+accidental*-1, TONES));
+			return FALSE;
+		}
+		cn = step(d, cn, mode);
+	}
+	return TRUE;
+}

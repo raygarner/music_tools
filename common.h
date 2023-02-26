@@ -24,10 +24,9 @@ enum {
 	B = 11
 };
 
-enum {
-	DOWN = -1,
-	UP = 1
-};
+enum { DOWN = -1, UP = 1 };
+
+enum { FLAT = -1, SHARP = 1};
 
 extern const int MAJOR_SCALE[DEGREES];
 extern const char INTERVAL[2];
@@ -43,4 +42,7 @@ int step(int, int, int);
 void init_key_field(int[TONES][DEGREES], int);
 void read_key_list(int[TONES][DEGREES], int);
 void print_matching_keys(const int[TONES][DEGREES], int);
-void print_mode(int m);
+void print_mode(int);
+int is_diatonic(int, int, int);
+int is_accidental(int);
+int is_correct_accidental(int, int, int);

@@ -15,7 +15,7 @@ options:
 	@echo "CC     = $(CC)"
 
 clean:
-	rm -f $(EXES) music_tools.tar.gz
+	rm -f $(EXES) test music_tools.tar.gz
 
 install: all
 	cp -f $(EXES) $(DEST)
@@ -42,6 +42,9 @@ fb:
 	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
 
 int:
+	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+
+test:
 	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
 
 .PHONY: all options clean install uninstall dist

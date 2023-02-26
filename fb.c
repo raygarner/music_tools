@@ -83,12 +83,12 @@ display_mode(int f, int m)
 
 	for (s = 0; s < STRINGS; s++)
 		init_string(fretboard[s]);
-	write_string(fretboard[SIXTH], f+7*0, m);
-	write_string(fretboard[FIFTH], f+7*1, m);
-	write_string(fretboard[FOURTH], f+7*2, m);
-	write_string(fretboard[THIRD], f+7*3, m);
+	write_string(fretboard[SIXTH],  f+7*0,   m);
+	write_string(fretboard[FIFTH],  f+7*1,   m);
+	write_string(fretboard[FOURTH], f+7*2,   m);
+	write_string(fretboard[THIRD],  f+7*3,   m);
 	write_string(fretboard[SECOND], f+7*4+1, m);
-	write_string(fretboard[FIRST], f+7*5+1, m);
+	write_string(fretboard[FIRST],  f+7*5+1, m);
 	for (s = FIRST; s >= SIXTH; s--)
 		print_string(fretboard[s]);
 	putchar('\n');

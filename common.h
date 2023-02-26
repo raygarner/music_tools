@@ -43,3 +43,4 @@ int step(int, int, int);
 void init_key_field(int[TONES][DEGREES], int);
 void read_key_list(int[TONES][DEGREES], int);
 void print_matching_keys(const int[TONES][DEGREES], int);
+void print_mode(int m);

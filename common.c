@@ -129,3 +129,20 @@ print_matching_keys(const int key_freq[TONES][DEGREES], int len)
 		}
 	}
 }
+
+void
+print_mode(int m)
+{
+	/*
+	int d, i = MAJOR_SCALE[m];
+	char c;
+
+	for (d = 0; d < DEGREES; d++) {
+		c = i == TONE ? 'w' : 'h';
+		putchar(c);
+		m = (m + 1) % DEGREES;
+		i = MAJOR_SCALE[m];
+	}
+	*/
+	printf("%s", MODES[m]);
+}

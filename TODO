@@ -1,4 +1,5 @@
 IMPORTANT: use is_correct_accidental key to use correct symbols
+IMPORTANT: fix c# Ionian edge case for is_correct_accidental
 integrate unix program to randomise the order of its args
 	this is to switch up output from crd
 	shows integration with general unix tools

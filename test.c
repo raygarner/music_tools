@@ -16,6 +16,6 @@ main(int argc, char *argv[])
 	printf("accidental = %d\n", a);
 	printf("n = %d\tm = %d\n", n, m);
 	//printf("%d\n", is_diatonic(11, 6, IONIAN));
-	printf("%d\n", is_correct_accidental(n, m, SHARP));
+	printf("%d\n", is_correct_accidental(n, m, FLAT));
 	return 0;
 }

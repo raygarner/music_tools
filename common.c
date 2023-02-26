@@ -171,6 +171,9 @@ is_correct_accidental(int root, int mode, int accidental)
 {
 	int d, cn = root, clasha, clashb;
 
+	if (clock_mod(root+mode,TONES) == C+1 || 
+	clock_mod(root+mode,TONES) == F+1 || clock_mod(root+mode,TONES) == B)
+		return TRUE;
 	for (d = 0; d < DEGREES; d++) {
 		if (is_accidental(cn) && \
 		is_diatonic(clock_mod(cn+accidental*-1, TONES), root, mode) && \

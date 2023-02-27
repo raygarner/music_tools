@@ -64,11 +64,16 @@ int
 read_mode(const char *input)
 {
 	int m;
+	char copy[2];
 
+	copy[0] = toupper(input[0]);
+	copy[1] = tolower(input[1]);
 	for (m = 0; m < DEGREES; m++) {
-		if (strcmp(input, MODES[m]) == 0)
+		if (strncmp(copy, MODES[m], 2) == 0) {
 			return m;
+		}
 	}
+	return -1;
 }
 
 void

@@ -1,7 +1,7 @@
 .POSIX:
 
 DEST = /usr/bin
-SRC = md.c crd.c cf.c fb.c int.c
+SRC = md.c crd.c cf.c fb.c int.c ks.c
 EXES = $(SRC:.c=)
 COMMON = common
 
@@ -42,6 +42,9 @@ fb:
 	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
 
 int:
+	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+
+ks:
 	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
 
 test:

@@ -1,6 +1,7 @@
 #define DEGREES 7
 #define TONES   12
 #define BUFLEN  16
+#define ERROR   -1
 
 enum { NOT_PRESENT, PRESENT };
 

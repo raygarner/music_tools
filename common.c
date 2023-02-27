@@ -18,15 +18,15 @@ read_accidental(char a)
 {
 	switch (a) {
 	case '+':
-		return 1;
+		return SHARP;
 	case '-':
-		return -1;
+		return FLAT;
 	case 'n': /* fallthrough */
 	case 'x':
 		return 0;
 	}
 	printf("Invalid input format for accidental\n");
-	exit(-1);
+	exit(ERROR);
 }
 
 int
@@ -51,7 +51,7 @@ read_note(char n)
 		return B;
 	}
 	printf("Invalid input format for note: %c\n", n);
-	exit(-1);
+	exit(ERROR);
 }
 
 int
@@ -68,12 +68,10 @@ read_mode(const char *input)
 
 	copy[0] = toupper(input[0]);
 	copy[1] = tolower(input[1]);
-	for (m = 0; m < DEGREES; m++) {
-		if (strncmp(copy, MODES[m], 2) == 0) {
+	for (m = 0; m < DEGREES; m++)
+		if (strncmp(copy, MODES[m], 2) == 0)
 			return m;
-		}
-	}
-	return -1;
+	return ERROR;
 }
 
 void

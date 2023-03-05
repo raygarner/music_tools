@@ -1,6 +1,5 @@
-write a standalone program to decide whether a key is valid or not (is_correct_accidental)
-	$ vk C Ionian
-	valid
+generalise step() so it can go up or down
+write about wildcards in design section
 find another way to fix edge cases in is_correct_accidental other than hardcoding
 integrate unix program to randomise the order of its args
 	this is to switch up output from crd

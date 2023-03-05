@@ -19,6 +19,6 @@ main(int argc, char *argv[])
 	if (is_correct_accidental(n, m, a))
 		printf("Valid accidental\n");
 	else
-		printf("Valid accidental\n");
+		printf("Invalid accidental\n");
 	return 0;
 }

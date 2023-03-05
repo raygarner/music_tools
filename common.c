@@ -98,7 +98,6 @@ step(int degree, int note, int mode)
 	return (note + MAJOR_SCALE[(degree + mode) % DEGREES]) % TONES;
 }
 
-
 void
 read_key_list(int key_field[TONES][DEGREES], int val)
 {
@@ -172,7 +171,7 @@ is_accidental(int note)
 int
 is_correct_accidental(int root, int mode, int accidental)
 {
-	int d, cn = root, clasha, clashb;
+	int d, cn = root;
 
 	if (clock_mod(root+mode,TONES) == C+1 || 
 	clock_mod(root+mode,TONES) == F+1 || clock_mod(root+mode,TONES) == B)

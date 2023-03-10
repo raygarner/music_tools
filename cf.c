@@ -145,7 +145,7 @@ main(int argc, char *argv[])
 				continue;
 			n = read_tone(c, getchar());
 			printf("n = %d\n", n);
-			scanf("10%s", buf);
+			scanf("%16s", buf);
 			m = read_mode(buf);
 			printf("m = %d\n", m);
 			printf("relative ionian %d\n", relative_ionian(n,m));

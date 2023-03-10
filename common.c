@@ -108,7 +108,7 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 		if (isspace(c))
 			continue;
 		note = read_tone(c, getchar());
-		scanf("10%s", buf);
+		scanf("%16s", buf);
 		mode = read_mode(buf);
 		if (note == X) {
 			for (i = 0; i < TONES; i++)

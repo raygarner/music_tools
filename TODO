@@ -1,3 +1,4 @@
+note: g- locrian - is invalid
 standalone fb usage
 generalise step() so it can go up or down
 find another way to fix edge cases in is_correct_accidental other than hardcoding

@@ -144,27 +144,17 @@ main(int argc, char *argv[])
 			if (isspace(c))
 				continue;
 			n = read_tone(c, getchar());
-			printf("n = %d\n", n);
 			scanf("%16s", buf);
 			m = read_mode(buf);
-			printf("m = %d\n", m);
-			printf("relative ionian %d\n", relative_ionian(n,m));
 			k = note_to_cf(relative_ionian(n, m));
-			printf("k = %d\n", k);
 			flat_key = is_flat_key(k);
-			printf("flat key = %d\n", flat_key);
 			accidentals = calc_accidentals(flat_key, k);
-			printf("accidentals = %d\n", accidentals);
 			altered = note_status(flat_key, accidentals);
-			for (i = 0; i < DEGREES; i++)
-				printf("%d ", altered[i]);
-			putchar('\n');
-			printf("printing key signature\n");
+			printf("%s %s:\n", NOTES[n], MODES[m]);
 			print_key_sig(flat_key, altered);
-			free(altered);
 			printf("\n\n");
+			free(altered);
 		}
-		printf("F = %d\n", F);
 		return 0;
 	}
 	k = atoi(argv[1]);

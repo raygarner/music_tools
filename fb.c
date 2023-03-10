@@ -107,6 +107,7 @@ main(int argc, char *argv[])
 		n = read_tone(c, getchar());
 		scanf("%16s", buf);
 		m = read_mode(buf);
+		printf("%s %s\n", NOTES[n], MODES[m]);
 		display_mode(note_to_fret(n), m);
 		printf("\n\n");
 	}

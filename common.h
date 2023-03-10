@@ -2,6 +2,7 @@
 #define TONES   12
 #define BUFLEN  16
 #define ERROR   -1
+#define ALL_KEYS '-'
 
 enum { NOT_PRESENT, PRESENT };
 

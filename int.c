@@ -31,7 +31,7 @@ main(int argc, char *argv[])
 	    key_field[TONES][DEGREES];
 	char tmp, c, buf[BUFLEN];
 	
-	if (argc > 2 && argv[2][0] == '-') {
+	if (argc > 2 && argv[2][0] == ALL_KEYS) {
 		init_key_field(key_field, 0);
 	} else {
 		init_key_field(key_field, -999);

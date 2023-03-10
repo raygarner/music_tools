@@ -45,7 +45,7 @@ main(int argc, char *argv[])
 		printf("eg: md cnf+\n");
 		return -1;
 	}
-	if (argc > 2 && argv[2][0] == '-') {
+	if (argc > 2 && argv[2][0] == ALL_KEYS) {
 		init_key_field(key_freq, 0); /* all keys are allowed */
 	} else {
 		init_key_field(key_freq, -999);

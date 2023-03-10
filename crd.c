@@ -31,7 +31,7 @@ main(int argc, char *argv[])
 	}
 	for (i = 0; i < 7; i++)
 		presence[i] = argv[1][i] == '1' ? PRESENT : NOT_PRESENT;
-	if (argc > 2 && argv[2][0] == '-') {
+	if (argc > 2 && argv[2][0] == ALL_KEYS) {
 		for (n = 0; n < TONES; n++) {
 			for (m = 0; m < DEGREES; m++) {
 				apply_bitfield(presence, m, n);

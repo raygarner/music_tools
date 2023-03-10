@@ -37,8 +37,7 @@ process_notes(const char notes[], int len, int key_freq[TONES][DEGREES])
 int
 main(int argc, char *argv[])
 {
-	int key_freq[TONES][DEGREES], note_count, note, mode;
-	char c, buf[BUFLEN];
+	int key_freq[TONES][DEGREES], note_count;
 
 	if (argc < 2) {
 		printf("Please pass notes as args\n");

@@ -98,18 +98,20 @@ display_mode(int f, int m)
 int
 main(int argc, char *argv[])
 {
-	int fretboard[STRINGS][FRETS], s, f, m, key_field[TONES][DEGREES], n;
+	int m, n;
 	char c, buf[BUFLEN];
 
-	while ((c = getchar()) != EOF) {
-		if (isspace(c))
-			continue;
-		n = read_tone(c, getchar());
-		scanf("%16s", buf);
-		m = read_mode(buf);
-		printf("%s %s:\n", NOTES[n], MODES[m]);
-		display_mode(note_to_fret(n), m);
-		printf("\n\n");
+	if (argc < 2) {
+		while ((c = getchar()) != EOF) {
+			if (isspace(c))
+				continue;
+			n = read_tone(c, getchar());
+			scanf("%16s", buf);
+			m = read_mode(buf);
+			printf("%s %s:\n", NOTES[n], MODES[m]);
+			display_mode(note_to_fret(n), m);
+			printf("\n\n");
+		}
 	}
 	return 0;
 }

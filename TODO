@@ -2,18 +2,32 @@ note: g- locrian - is invalid
 standalone fb usage
 generalise step() so it can go up or down
 find another way to fix edge cases in is_correct_accidental other than hardcoding
+melody generator (ml (melody))
+	takes a list of notes
+	arranges them in a 'melodic' order
+		the order should match the graphs of bach melody analysis
+	symmetry
+	stepwise
+voice generator (av (add voice))
+	takes a list of notes (probably output from melody generator) and adds voice beneath it
+	takes mode (eg phrygian, ionian (no root note specified)) as an extra arg
+	2 voice harmony
+	chord transisions should match bach analysis
+	standard rules:
+		parallel 3rds = good
+		parallel 5ths = bad
+		contrary motion = good
+		root inversion = good
+		first inversion = good
+		second inversion = bad
+	just chords I, IV, V using root and first inversion
 integrate unix program to randomise the order of its args
 	this is to switch up output from crd
 	shows integration with general unix tools
-VOICE GENERATOR
-	can take a list of notes (eg output from crd) and generate a second voice to be played at the same time
-	this way we can evaluate chord transition frequency (chords can be implied with just 2 voices) and also melody interval frequency
-	parallel 3rds = good
-	parallel 5ths = bad
-	contrary motion = good
-	root inversion = good
-	first inversion = good
-	second inversion = bad
+	or
+	dont use randomnoess (melody generator)
+	melody generator takes a list of notes and arranges them in a melodic
+	order
 write program to take unsorted musical data such as modes or chords and return it as a list sorted by 'tension' value of each item
 add index/id to each line of output so can track data flow
 documentation
@@ -21,7 +35,7 @@ hard code degree vals
 make int allow user to specify which notes are natural 
 flag to input notes via stdin for md
 delete unused variables
-shorted lines over 79 chars wide
+shorten lines over 79 chars wide
 add function prototypes
 algorithm to avoid double accidentals (determine whether a key should sharp or flat)
 program to identify chords

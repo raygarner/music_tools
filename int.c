@@ -27,9 +27,9 @@ is_degree_flat(int d, int m)
 int
 main(int argc, char *argv[])
 {
-	int m, target = 3, n, v = 0, modes[DEGREES], i, len, d, 
+	int m, n, i, len,
 	    key_field[TONES][DEGREES];
-	char tmp, c, buf[BUFLEN];
+	char tmp;
 	
 	if (argc > 2 && argv[2][0] == ALL_KEYS) {
 		init_key_field(key_field, 0);

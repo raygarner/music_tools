@@ -30,8 +30,13 @@ enum { DOWN = -1, UP = 1 };
 
 enum { FLAT = -1, SHARP = 1};
 
+typedef struct Node Node;
+struct Node {
+	int data;
+	Node *next;
+};
+
 extern const int MAJOR_SCALE[DEGREES];
-extern const char INTERVAL[2];
 extern const char *MODES[DEGREES];
 extern const char *NOTES[TONES];
 
@@ -48,3 +53,5 @@ void print_mode(int);
 int is_diatonic(int, int, int);
 int is_accidental(int);
 int is_correct_accidental(int, int, int);
+Node *prepend_node(Node *head);
+Node *pop_head(Node *head);

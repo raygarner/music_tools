@@ -7,7 +7,6 @@
 
 const int MAJOR_SCALE[DEGREES] = { TONE, TONE, SEMITONE, TONE, TONE, TONE, 
                                    SEMITONE };
-const char INTERVAL[2] = { 'h', 'w' };
 const char *MODES[DEGREES] = { "Ionian", "Dorian", "Phrygian", "Lydian", 
                                "Mixolydian", "Aeolian", "Locrian" };
 const char *NOTES[TONES] = { "Cn", "C+", "Dn", "E-", "En", "Fn", "F+", "Gn", "A-",
@@ -185,4 +184,22 @@ is_correct_accidental(int root, int mode, int accidental)
 		cn = step(d, cn, mode);
 	}
 	return TRUE;
+}
+
+Node *
+prepend_node(Node *head)
+{
+	Node *new = malloc(sizeof(Node));
+
+	new->next = head;
+	return new;
+}
+
+Node *
+pop_head(Node *head)
+{
+	Node *new_head = head->next;
+
+	free(head);
+	return new_head;
 }

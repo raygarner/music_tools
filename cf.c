@@ -136,7 +136,7 @@ note_to_cf(int n)
 int
 main(int argc, char *argv[])
 {
-	int k, accidentals, flat_key, *altered, n, m, i;
+	int k, accidentals, flat_key, *altered, n, m;
 	char c, buf[BUFLEN];
 
 	if (argc < 2) {

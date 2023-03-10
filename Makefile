@@ -1,9 +1,10 @@
 .POSIX:
 
 DEST = /usr/bin
-SRC = md.c crd.c cf.c fb.c int.c ks.c
+SRC = md.c crd.c cf.c fb.c int.c ks.c ml.c
 EXES = $(SRC:.c=)
 COMMON = common
+MYCFLAGS = -Wall $(CFLAGS)
 
 all: $(EXES)
 
@@ -30,24 +31,27 @@ dist: clean
 	rm -rf music_tools-dist
 
 md:
-	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 crd:
-	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 cf:
-	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 fb:
-	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 int:
-	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 ks:
-	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
+
+ml:
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 test:
-	$(CC) $(CFLAGS) $@.c $(COMMON).c -o $@
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 .PHONY: all options clean install uninstall dist

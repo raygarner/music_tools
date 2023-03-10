@@ -20,8 +20,7 @@ apply_bitfield(const int presence[DEGREES], int m, int n)
 int
 main(int argc, char *argv[])
 {
-	int note, mode, presence[DEGREES], d, current_note, chord, 
-	    i = DEGREES-1, allowed_keys[TONES][DEGREES], n, m;
+	int note, mode, presence[DEGREES], i = DEGREES-1, n, m;
 	char c, buf[BUFLEN];
 
 	if (argc < 2) {

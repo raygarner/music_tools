@@ -105,7 +105,7 @@ main(int argc, char *argv[])
 		if (isspace(c))
 			continue;
 		n = read_tone(c, getchar());
-		scanf("%s", buf);
+		scanf("%10s", buf);
 		m = read_mode(buf);
 		display_mode(note_to_fret(n), m);
 		printf("\n\n");

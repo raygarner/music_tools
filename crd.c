@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 			if (isspace(c))
 				continue;
 			note = read_tone(c, getchar());
-			scanf("%s", buf);
+			scanf("10%s", buf);
 			mode = read_mode(buf);
 			if (note == X)
 				for (note = 0; note < TONES; note++) {

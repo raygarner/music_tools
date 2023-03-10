@@ -1,3 +1,4 @@
+standalone fb usage
 generalise step() so it can go up or down
 write about wildcards in design section
 find another way to fix edge cases in is_correct_accidental other than hardcoding

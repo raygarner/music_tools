@@ -25,7 +25,7 @@ read_accidental(char a)
 	case 'x':
 		return 0;
 	}
-	printf("Invalid input format for accidental\n");
+	printf("Invalid input %c for accidental\n", a);
 	exit(ERROR);
 }
 
@@ -108,7 +108,7 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 		if (isspace(c))
 			continue;
 		note = read_tone(c, getchar());
-		scanf("%s", buf);
+		scanf("10%s", buf);
 		mode = read_mode(buf);
 		if (note == X) {
 			for (i = 0; i < TONES; i++)

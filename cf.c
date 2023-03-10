@@ -15,6 +15,8 @@ enum { B_LINE = 1, F_LINE = 5 };
 
 const char *key_icons[TONES] = {"C", "G", "D", "A", "E", "B", "F#", "C#", "Ab",
                                "Eb", "Bb", "F"};
+
+/* talk about why this data isnt used in the writeup */                      
                       /* {1, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5} */
 /*
 const int cf[DEGREES] = {C_NATURAL, C_SHARP, D_NATURAL, E_FLAT, E_NATURAL,
@@ -138,13 +140,12 @@ main(int argc, char *argv[])
 	char c, buf[BUFLEN];
 
 	if (argc < 2) {
-		/* read modes from stdin here */
 		while ((c = getchar()) != EOF) {
 			if (isspace(c))
 				continue;
 			n = read_tone(c, getchar());
 			printf("n = %d\n", n);
-			scanf("%s", buf);
+			scanf("10%s", buf);
 			m = read_mode(buf);
 			printf("m = %d\n", m);
 			printf("relative ionian %d\n", relative_ionian(n,m));

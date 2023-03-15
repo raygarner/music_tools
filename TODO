@@ -1,4 +1,4 @@
-make melodies always end on a chord tone
+make ml read multiple chords and produce multiple melodies (on new lines)
 idea: crd can take decimals
 	eg 1010100 for triad
 	but think 2010100 to double the root eg C E G C chord

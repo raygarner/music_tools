@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 				}
 			else
 				apply_bitfield(presence, mode, note);
-			putchar('\n');
+			printf("- %s %s\n", NOTES[note], MODES[mode]);
 		}
 	}
 	return 0;

@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "common.h"
 
@@ -60,8 +59,8 @@ main(int argc, char *argv[])
 	    tone_diff, step_diff, mode, root, d, passing_step;
 
 	if (argc < 2) {
-		printf("Please pass the length of the melody as an arg\n");
-		printf("eg: ml 5\n");
+		printf("Please pass melody length and seed as args\n");
+		printf("eg: ml 5 98\n");
 		return 1;
 	}
 	melody_len = atoi(argv[1]);
@@ -69,8 +68,9 @@ main(int argc, char *argv[])
 		printf("Invalid melody length\n");
 		return 1;
 	}
+	melody_len = melody_len % 2 == 0 ? melody_len + 1 : melody_len;
 	melody = calloc(melody_len, sizeof(int));
-	srand(time(NULL));
+	srand(atoi(argv[2]));
 	i = 0;
 	while ((c = getchar()) != '-') {
 		if (isspace(c))
@@ -85,19 +85,15 @@ main(int argc, char *argv[])
 	root = read_tone(c, getchar());
 	scanf("%16s", buf);
 	mode = read_mode(buf);
-	printf("%s %s\n", NOTES[root], MODES[mode]);
-	printf("skeleton melody: ");
-	for (i = 0; i < melody_len; i+=2) {
+	for (i = 0; i < melody_len; i+=2)
 		melody[i] = notes[rand() % notes_len];
-		printf("%s ", NOTES[melody[i]]);
-	}
-	putchar('\n');
+	/* TODO: stop overflows on this */
 	for (i = 1; i < melody_len; i+=2) {
 		tone_diff = min_tone_diff(melody[i-1], melody[i+1]);
 		step_diff = count_scale_steps(root, mode, melody[i-1], 
 		                              melody[i+1]);
 		step_diff = tone_diff < 0 ? DEGREES-step_diff : step_diff;
-		if (step_diff != 0) 
+		if (step_diff != 0)
 			passing_step = rand() % step_diff;
 		else
 			passing_step = rand() % 2 == 0 ? -1 : 1;
@@ -105,9 +101,9 @@ main(int argc, char *argv[])
 		d = calc_degree(melody[i-1], root, mode);
 		melody[i] = apply_steps(d, mode, melody[i-1], passing_step);
 	}
-	for (i = 0; i < melody_len; i++) {
+	for (i = 0; i < melody_len; i++)
 		printf("%s ", NOTES[melody[i]]);
-	}
+	putchar('\n');
 	free(melody);
 	return 0;
 }

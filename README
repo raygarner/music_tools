@@ -87,3 +87,10 @@ $ echo "An Ionian B- Aeolian" | crd 1010100
 An C+ En
 B- C+ Fn
 
+ml
+==
+TODO flesh this out
+$ echo "an cn en - an aeolian" | ml 8
+An Aeolian
+skeleton melody: Cn An En Cn
+Cn Cn An Fn En En Cn Bn $

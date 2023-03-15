@@ -17,11 +17,13 @@ read_accidental(char a)
 {
 	switch (a) {
 	case '+':
+	case '#':
 		return SHARP;
 	case '-':
+	case 'b':
 		return FLAT;
 	case 'n': /* fallthrough */
-	case 'x':
+	case WILDCARD_ICON: 
 		return 0;
 	}
 	printf("Invalid input %c for accidental\n", a);
@@ -32,7 +34,7 @@ int
 read_note(char n)
 {
 	switch (tolower(n)) {
-	case 'x':
+	case WILDCARD_ICON:
 		return X;
 	case 'c':
 		return C;
@@ -131,26 +133,23 @@ print_matching_keys(const int key_freq[TONES][DEGREES], int len)
 	}
 }
 
-void
-print_mode(int m)
+int
+calc_degree(int note, int root, int mode)
 {
-	/*
-	int d, i = MAJOR_SCALE[m];
-	char c;
+	int d, cn = root;
 
 	for (d = 0; d < DEGREES; d++) {
-		c = i == TONE ? 'w' : 'h';
-		putchar(c);
-		m = (m + 1) % DEGREES;
-		i = MAJOR_SCALE[m];
+		if (cn == note)
+			return d;
+		cn = step(d, cn, mode);
 	}
-	*/
-	printf("%s", MODES[m]);
+	return ERROR;
 }
 
 int
 is_diatonic(int note, int root, int mode)
 {
+	/*
 	int d, cn = root;
 
 	for (d = 0; d < DEGREES; d++) {
@@ -159,6 +158,8 @@ is_diatonic(int note, int root, int mode)
 		cn = step(d, cn, mode);
 	}
 	return FALSE;
+	*/
+	return calc_degree(note, root, mode) == ERROR ? FALSE : TRUE;
 }
 
 int
@@ -177,7 +178,7 @@ is_correct_accidental(int root, int mode, int accidental)
 		return TRUE;
 	for (d = 0; d < DEGREES; d++) {
 		if (is_accidental(cn) && \
-		is_diatonic(clock_mod(cn+accidental*-1, TONES), root, mode) && \
+		is_diatonic(clock_mod(cn+accidental*-1, TONES), root, mode) &&\
 		is_accidental(clock_mod(cn+accidental*-2, TONES))) {
 			return FALSE;
 		}
@@ -187,11 +188,12 @@ is_correct_accidental(int root, int mode, int accidental)
 }
 
 Node *
-prepend_node(Node *head)
+prepend_node(Node *head, int data)
 {
 	Node *new = malloc(sizeof(Node));
 
 	new->next = head;
+	new->data = data;
 	return new;
 }
 
@@ -202,4 +204,26 @@ pop_head(Node *head)
 
 	free(head);
 	return new_head;
+}
+
+void
+print_list(const Node *head)
+{
+	while (head) {
+		printf("%d \n", head->data);
+		head = head->next;
+	}
+	putchar('\n');
+}
+
+void
+delete_list(Node *head)
+{
+	Node *n;
+
+	while (head) {
+		n = head->next;
+		free(head);
+		head = n;
+	}
 }

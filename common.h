@@ -3,6 +3,7 @@
 #define BUFLEN  16
 #define ERROR   -1
 #define ALL_KEYS '-'
+#define WILDCARD_ICON 'x'
 
 enum { NOT_PRESENT, PRESENT };
 
@@ -23,12 +24,13 @@ enum {
 	F = 5,
 	G = 7,
 	A = 9,
-	B = 11
+	B = 11,
+	LAST_NOTE = 999
 };
 
-enum { DOWN = -1, UP = 1 };
+enum { DOWN = -1, SAME = 0, UP = 1 };
 
-enum { FLAT = -1, SHARP = 1};
+enum { FLAT = -1, SHARP = 1 };
 
 typedef struct Node Node;
 struct Node {
@@ -50,8 +52,11 @@ void init_key_field(int[TONES][DEGREES], int);
 void read_key_list(int[TONES][DEGREES], int);
 void print_matching_keys(const int[TONES][DEGREES], int);
 void print_mode(int);
+int calc_degree(int note, int root, int mode);
 int is_diatonic(int, int, int);
 int is_accidental(int);
 int is_correct_accidental(int, int, int);
-Node *prepend_node(Node *head);
+Node *prepend_node(Node *head, int data);
 Node *pop_head(Node *head);
+void print_list(const Node *head);
+void delete_list(Node *head);

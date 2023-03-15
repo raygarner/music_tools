@@ -8,11 +8,14 @@ MYCFLAGS = -Wall $(CFLAGS)
 
 all: $(EXES)
 
+full: clean all 
+	sudo make install
+
 options:
 	@echo "DEST   = $(DEST)"
 	@echo "SRC    = $(SRC)"
 	@echo "EXES   = $(EXES)"
-	@echo "CFLAGS = $(CFLAGS)"
+	@echo "MYCFLAGS = $(MYCFLAGS)"
 	@echo "CC     = $(CC)"
 
 clean:
@@ -54,4 +57,4 @@ ml:
 test:
 	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
-.PHONY: all options clean install uninstall dist
+.PHONY: all full options clean install uninstall dist

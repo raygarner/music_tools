@@ -87,7 +87,6 @@ main(int argc, char *argv[])
 	mode = read_mode(buf);
 	for (i = 0; i < melody_len; i+=2)
 		melody[i] = notes[rand() % notes_len];
-	/* TODO: stop overflows on this */
 	for (i = 1; i < melody_len; i+=2) {
 		tone_diff = min_tone_diff(melody[i-1], melody[i+1]);
 		step_diff = count_scale_steps(root, mode, melody[i-1], 

@@ -32,12 +32,6 @@ enum { DOWN = -1, SAME = 0, UP = 1 };
 
 enum { FLAT = -1, SHARP = 1 };
 
-typedef struct Node Node;
-struct Node {
-	int data;
-	Node *next;
-};
-
 extern const int MAJOR_SCALE[DEGREES];
 extern const char *MODES[DEGREES];
 extern const char *NOTES[TONES];
@@ -56,7 +50,3 @@ int calc_degree(int note, int root, int mode);
 int is_diatonic(int, int, int);
 int is_accidental(int);
 int is_correct_accidental(int, int, int);
-Node *prepend_node(Node *head, int data);
-Node *pop_head(Node *head);
-void print_list(const Node *head);
-void delete_list(Node *head);

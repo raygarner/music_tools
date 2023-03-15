@@ -1,8 +1,6 @@
-/* ml: melodically arrange note input (eg output from crd) 
- * maximises symetry and minimises intervals between notes
- * ref: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.433.2985&rep=rep1&type=pdf
- * chord based melody (chapter 2.5.2)
- */
+/* build melody from chord input (including key mode)
+ * put chord notes on strong beats (even beats)
+ * fill gaps with most stepwise notes */
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -51,6 +49,35 @@ apply_steps(int degree, int mode, int note, int steps)
 	return note;
 }
 
+void
+generate_line(int melody_len, const int notes[DEGREES], int notes_len, 
+              int root, int mode)
+{
+	int *melody = NULL, i, tone_diff, step_diff, passing_step, d;
+	char c, buf[BUFLEN];
+
+	melody = calloc(melody_len, sizeof(int));
+	for (i = 0; i < melody_len; i+=2)
+		melody[i] = notes[rand() % notes_len];
+	for (i = 1; i < melody_len; i+=2) {
+		tone_diff = min_tone_diff(melody[i-1], melody[i+1]);
+		step_diff = count_scale_steps(root, mode, melody[i-1],
+		                              melody[i+1]);
+		step_diff = tone_diff < 0 ? DEGREES - step_diff : step_diff;
+		if (step_diff != 0)
+			passing_step = rand() % step_diff;
+		else
+			passing_step = rand() % 2 == 0 ? -1 : 1;
+		passing_step = tone_diff < 0 ? 0 - passing_step : passing_step;
+		d = calc_degree(melody[i-1], root, mode);
+		melody[i] = apply_steps(d, mode, melody[i-1], passing_step);
+	}
+	for (i = 0; i < melody_len; i++)
+		printf("%s ", NOTES[melody[i]]);
+	putchar('\n');
+	free(melody);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -69,40 +96,26 @@ main(int argc, char *argv[])
 		return 1;
 	}
 	melody_len = melody_len % 2 == 0 ? melody_len + 1 : melody_len;
-	melody = calloc(melody_len, sizeof(int));
 	srand(atoi(argv[2]));
-	i = 0;
-	while ((c = getchar()) != '-') {
-		if (isspace(c))
-			continue;
-		notes[i] = read_tone(c, getchar());
-		if (i == DEGREES-1)
-			break;
-		i++;
+	c = getchar();
+	while (c != EOF) {
+		i = 0;
+		do {
+			if (isspace(c))
+				continue;
+			notes[i] = read_tone(c, getchar());
+			if (i == DEGREES-1)
+				break;
+			i++;
+		} while ((c = getchar()) != '-');
+		notes_len = i;
+		while (isspace(c = getchar())) {}
+		root = read_tone(c, getchar());
+		scanf("%16s", buf);
+		mode = read_mode(buf);
+		generate_line(melody_len, notes, notes_len, root, mode);
+		getchar();
+		c = getchar();
 	}
-	notes_len = i;
-	while (isspace(c = getchar())) {}
-	root = read_tone(c, getchar());
-	scanf("%16s", buf);
-	mode = read_mode(buf);
-	for (i = 0; i < melody_len; i+=2)
-		melody[i] = notes[rand() % notes_len];
-	for (i = 1; i < melody_len; i+=2) {
-		tone_diff = min_tone_diff(melody[i-1], melody[i+1]);
-		step_diff = count_scale_steps(root, mode, melody[i-1], 
-		                              melody[i+1]);
-		step_diff = tone_diff < 0 ? DEGREES-step_diff : step_diff;
-		if (step_diff != 0)
-			passing_step = rand() % step_diff;
-		else
-			passing_step = rand() % 2 == 0 ? -1 : 1;
-		passing_step = tone_diff < 0 ? 0 - passing_step : passing_step;
-		d = calc_degree(melody[i-1], root, mode);
-		melody[i] = apply_steps(d, mode, melody[i-1], passing_step);
-	}
-	for (i = 0; i < melody_len; i++)
-		printf("%s ", NOTES[melody[i]]);
-	putchar('\n');
-	free(melody);
 	return 0;
 }

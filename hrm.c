@@ -1,4 +1,4 @@
-/* av: add voice
+/* hrm: harmonise
  * takes a list of notes (eg output from crd) and adds an accompany part
  * beneath it (bass voice)
  * additionally takes a key sig to use to generate the bass voice

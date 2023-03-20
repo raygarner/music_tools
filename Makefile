@@ -1,7 +1,7 @@
 .POSIX:
 
 DEST = /usr/bin
-SRC = md.c crd.c cf.c fb.c int.c ks.c ml.c
+SRC = md.c crd.c cf.c fb.c int.c ks.c mld.c hrm.c
 EXES = $(SRC:.c=)
 COMMON = common
 MYCFLAGS = -Wall $(CFLAGS)
@@ -51,7 +51,10 @@ int:
 ks:
 	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
-ml:
+mld:
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
+
+hrm:
 	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
 test:

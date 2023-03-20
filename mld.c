@@ -54,7 +54,6 @@ generate_line(int melody_len, const int notes[DEGREES], int notes_len,
               int root, int mode)
 {
 	int *melody = NULL, i, tone_diff, step_diff, passing_step, d;
-	char c, buf[BUFLEN];
 
 	melody = calloc(melody_len, sizeof(int));
 	for (i = 0; i < melody_len; i+=2)
@@ -82,8 +81,8 @@ int
 main(int argc, char *argv[])
 {
 	char c, buf[BUFLEN];
-	int notes[DEGREES], notes_len, melody_len, i, *melody = NULL, 
-	    tone_diff, step_diff, mode, root, d, passing_step;
+	int notes[DEGREES], notes_len, melody_len, i, mode, 
+	    root;
 
 	if (argc < 2) {
 		printf("Please pass melody length and seed as args\n");

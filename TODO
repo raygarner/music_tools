@@ -1,3 +1,18 @@
+hrm:
+	take output from mld and add bass line
+	2 voice harmony
+	chord transisions should match bach analysis
+	standard rules:
+		parallel 3rds = good
+		parallel 5ths = bad
+		contrary motion = good
+		root inversion = good
+		first inversion = good
+		second inversion = bad
+	just chords I, IV, V using root and first inversion
+musicxml output format
+make en ionian use 4 sharps (not a weird mix of sharps and flats)
+	En F+ A- An Bn C+ E- - En Ionian
 add argument specifying beats between chord tones in ml
 idea: crd can take decimals
 	eg 1010100 for triad
@@ -7,8 +22,8 @@ note: g- locrian - is invalid
 standalone fb usage
 generalise step() so it can go up or down
 find another way to fix edge cases in is_correct_accidental other than hardcoding
-av:
-	take output from ml and add bass line
+hrm:
+	take output from mld and add bass line
 	2 voice harmony
 	chord transisions should match bach analysis
 	standard rules:

@@ -32,6 +32,23 @@ enum { DOWN = -1, SAME = 0, UP = 1 };
 
 enum { FLAT = -1, SHARP = 1 };
 
+enum {
+	I,
+	II,
+	III,
+	IV,
+	V,
+	VI,
+	VII
+};
+
+typedef struct Node Node;
+struct Node {
+	int data;
+	Node *prev;
+	Node *next;
+};
+
 extern const int MAJOR_SCALE[DEGREES];
 extern const char *MODES[DEGREES];
 extern const char *NOTES[TONES];
@@ -50,3 +67,10 @@ int calc_degree(int note, int root, int mode);
 int is_diatonic(int, int, int);
 int is_accidental(int);
 int is_correct_accidental(int, int, int);
+Node *prepend_node(Node *, int);
+Node *append_node(Node *, int);
+Node *pop_head(Node *);
+void print_list(const Node *);
+void delete_list(Node *);
+int apply_steps(int, int, int, int);
+int min_tone_diff(int, int);

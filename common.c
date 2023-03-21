@@ -187,3 +187,86 @@ is_correct_accidental(int root, int mode, int accidental)
 	return TRUE;
 }
 
+Node *
+prepend_node(Node *head, int data)
+{
+	Node *new = malloc(sizeof(Node));
+
+	new->prev = NULL;
+	new->next = head;
+	new->data = data;
+	if (head)
+		head->prev = new;
+	return new;
+}
+
+Node *
+append_node(Node *tail, int data)
+{
+	Node *new = malloc(sizeof(Node));
+
+	new->prev = tail;
+	new->data = data;
+	new->next = NULL;
+	if (tail)
+		tail->next = new;
+	return new;
+}
+
+Node *
+pop_head(Node *head)
+{
+	Node *new_head = head->next;
+
+	free(head);
+	return new_head;
+}
+
+void
+print_list(const Node *head)
+{
+	while (head) {
+		printf("%s ", NOTES[head->data]);
+		head = head->next;
+	}
+	putchar('\n');
+}
+
+void
+delete_list(Node *head)
+{
+	Node *n;
+
+	while (head) {
+		n = head->next;
+		free(head);
+		head = n;
+	}
+}
+
+int
+apply_steps(int degree, int mode, int note, int steps)
+{
+	int dir, s, i;
+
+	dir = steps < 0 ? DOWN: UP;
+	degree = steps < 0 ? clock_mod(degree - 1, DEGREES) : degree;
+	for (s = 0; s != steps; s += dir) {
+		i = MAJOR_SCALE[clock_mod(degree + mode, DEGREES)];
+		note = clock_mod(note + dir * i, TONES);
+		degree = clock_mod(degree + dir, DEGREES);
+	}
+	return note;
+}
+
+int
+min_tone_diff(int note_a, int note_b)
+{
+	int down_steps = clock_mod(note_a - note_b, TONES);
+	int up_steps = clock_mod(note_b - note_a, TONES);
+
+	if (down_steps < up_steps)
+		return 0-down_steps;
+	else
+		return up_steps;
+}

@@ -8,18 +8,6 @@
 #include "common.h"
 
 int
-min_tone_diff(int note_a, int note_b)
-{
-	int down_steps = clock_mod(note_a - note_b, TONES);
-	int up_steps = clock_mod(note_b - note_a, TONES);
-
-	if (down_steps < up_steps)
-		return 0-down_steps;
-	else
-		return up_steps;
-}
-
-int
 count_scale_steps(int root, int mode, int start_note, int end_note)
 {
 	int i, d, cn = start_note;
@@ -32,21 +20,6 @@ count_scale_steps(int root, int mode, int start_note, int end_note)
 		d = (d+1) % DEGREES;
 	}
 	return ERROR;
-}
-
-int
-apply_steps(int degree, int mode, int note, int steps)
-{
-	int dir, s, i;
-
-	dir = steps < 0 ? DOWN: UP;
-	degree = steps < 0 ? clock_mod(degree - 1, DEGREES) : degree;
-	for (s = 0; s != steps; s += dir) {
-		i = MAJOR_SCALE[clock_mod(degree + mode, DEGREES)];
-		note = clock_mod(note + dir * i, TONES);
-		degree = clock_mod(degree + dir, DEGREES);
-	}
-	return note;
 }
 
 void
@@ -73,7 +46,7 @@ generate_line(int melody_len, const int notes[DEGREES], int notes_len,
 	}
 	for (i = 0; i < melody_len; i++)
 		printf("%s ", NOTES[melody[i]]);
-	putchar('\n');
+	printf("- %s %s\n", NOTES[root], MODES[mode]);
 	free(melody);
 }
 

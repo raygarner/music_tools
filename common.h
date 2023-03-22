@@ -72,5 +72,6 @@ Node *append_node(Node *, int);
 Node *pop_head(Node *);
 void print_list(const Node *);
 void delete_list(Node *);
+Node *copy_list(Node *);
 int apply_steps(int, int, int, int);
 int min_tone_diff(int, int);

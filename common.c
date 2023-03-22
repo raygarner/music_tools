@@ -244,6 +244,20 @@ delete_list(Node *head)
 	}
 }
 
+Node *
+copy_list(Node *src_head)
+{
+	Node *dest_tail = NULL, *dest_head = NULL;
+
+	while (src_head) {
+		dest_tail = append_node(dest_tail, src_head->data);
+		if (dest_head == NULL)
+			dest_head = dest_tail;
+		src_head = src_head->next;
+	}
+	return dest_head;
+}
+
 int
 apply_steps(int degree, int mode, int note, int steps)
 {
@@ -270,3 +284,4 @@ min_tone_diff(int note_a, int note_b)
 	else
 		return up_steps;
 }
+

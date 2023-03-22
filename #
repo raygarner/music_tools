@@ -245,14 +245,14 @@ delete_list(Node *head)
 }
 
 Node *
-copy_list(Node *src_head)
+copy_list(Node *src_head, Node **dest_tail)
 {
-	Node *dest_head = NULL, *dest_tail = NULL;
+	Node *dest_head = NULL;
 
 	while (src_head) {
-		dest_tail = append_node(dest_tail, src_head->data);
+		*dest_tail = append_node(*dest_tail, src_head->data);
 		if (dest_head == NULL)
-			dest_head = dest_tail;
+			dest_head = *dest_tail;
 		src_head = src_head->next;
 	}
 	return dest_head;

@@ -13,8 +13,6 @@
 enum { THIRD = 2, FOURTH = 3, FIFTH = 4, SIXTH = 5 };
 enum { FOURTH_TONES = 5, FIFTH_TONES = 7 };
 
-void improve_bass_line(Node *, Node *, int, int);
-
 /* is degree I, IV or V */
 int
 is_primary_degree(int note, int root, int mode)
@@ -121,6 +119,7 @@ generate_middle_line(Node *bass_tail, Node *mld_tail, int root, int mode)
 	return mid_head;
 }
 
+/* TODO: remove frequency stuff */
 int
 pick_primary_chord(int mld_degree, const int freq[DEGREES])
 {
@@ -165,11 +164,7 @@ negative(int x)
 	return x < 0;
 }
 
-/* repeated notes */
-/* parallel octaves or 5ths */
-/* double leap */
-/* smaller number is better */
-/* TODO: avoid sirening */
+/* TODO: encourage stepwise apart from last 2 notes */
 int
 faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
@@ -212,7 +207,6 @@ faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 	return fault;
 }
 
-/* TODO: count range */
 int
 count_faults(Node *bass_note, Node *mld_note, int root, int mode)
 {
@@ -310,16 +304,6 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
 	return ret;
 }
 
-void
-improve_bass_line(Node *bass_head, Node *mld_head, int root, int mode)
-{
-	while (bass_head && mld_head) {
-		improve_bass_note(bass_head, mld_head, root, mode);
-		bass_head = bass_head->next;
-		mld_head = mld_head->next;
-	}
-}
-
 Node *
 generate_bass_line(Node *melody_tail, Node *bass_tail, int root, int mode)
 {
@@ -361,14 +345,6 @@ main(int argc, char *argv[])
 	Node *melody_tail = NULL, *melody_head = NULL, *bass_head = NULL,
 	     *bass_tail = NULL, *mid_head = NULL;
 
-	/*
-	if (argc < 2) {
-		printf("Please pass seed as arg\n");
-		printf("eg: hrm 5\n");
-		return 1;
-	}
-	srand(atoi(argv[1]));
-	*/
 	c = getchar();
 	while (c != EOF) {
 		do {

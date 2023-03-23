@@ -10,7 +10,7 @@
 
 #include "common.h"
 
-enum { THIRD = 2, FIFTH = 4, SIXTH = 5 };
+enum { THIRD = 2, FOURTH = 3, FIFTH = 4, SIXTH = 5 };
 enum { FOURTH_TONES = 5, FIFTH_TONES = 7 };
 
 void improve_bass_line(Node *, Node *, int, int);
@@ -128,10 +128,13 @@ pick_primary_chord(int mld_degree, const int freq[DEGREES])
 	case I: /* I or IV */
 		if (freq[I] < freq[IV])
 			return I;
-		else if (freq[IV] < freq[I])
+		//else if (freq[IV] < freq[I])
+		else
 			return IV;
+		/*
 		else
 			return rand() % 2 ? I : IV;
+		*/
 	case II:
 		return V;
 	case III:
@@ -141,10 +144,13 @@ pick_primary_chord(int mld_degree, const int freq[DEGREES])
 	case V: /* I or V */
 		if (freq[I] < freq[V])
 			return I;
-		else if (freq[V] < freq[I])
+		//else if (freq[V] < freq[I])
+		else
 			return V;
+		/*
 		else
 			return rand() % 2 ? I : V;
+		*/
 	case VI:
 		return IV;
 	case VII:
@@ -153,14 +159,21 @@ pick_primary_chord(int mld_degree, const int freq[DEGREES])
 	return -1;
 }
 
+int
+negative(int x)
+{
+	return x < 0;
+}
+
 /* repeated notes */
 /* parallel octaves or 5ths */
 /* double leap */
 /* smaller number is better */
+/* TODO: avoid sirening */
 int
-faulty_note(Node *bass_note, Node *mld_note)
+faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
-	int fault = 0;
+	int fault = 0, bass_degree, prev_bass_degree, ia, ib;
 
 	if (!(bass_note->prev && mld_note->prev))
 		return 0;
@@ -171,30 +184,49 @@ faulty_note(Node *bass_note, Node *mld_note)
 	if (bass_note->data == mld_note->data && bass_note->prev->data == mld_note->prev->data)
 		fault += 1;
 	/* paralell fifths */
-	if ((mld_note->data == (bass_note->data + FIFTH_TONES) % TONES) && \
-	(mld_note->prev->data == (bass_note->prev->data + FIFTH_TONES) % TONES))
+	bass_degree = calc_degree(bass_note->data, root, mode);
+	prev_bass_degree = calc_degree(bass_note->prev->data, root, mode);
+	if ((mld_note->data == apply_steps(bass_degree, mode, bass_note->data, FIFTH) && \
+	mld_note->prev->data == apply_steps(prev_bass_degree, mode, bass_note->prev->data, FIFTH)))
 		fault += 1;
-	/* leaps of a fourth or greater */
-	if (abs(min_tone_diff(bass_note->data, bass_note->prev->data)) >= FOURTH_TONES)
+	/* leaps of greater than a fourth */
+	/* allow in last 2 notes */
+	if (bass_note->next && bass_note->next->next && \
+	abs(min_tone_diff(bass_note->data, bass_note->prev->data)) > \
+	abs(min_tone_diff(bass_note->data, apply_steps(bass_degree, mode, bass_note->data, FOURTH))))
 		fault += 1;
-	/* double leaps */
-	if (bass_note->prev->prev && \
-	abs(min_tone_diff(bass_note->data, bass_note->prev->data)) > TONE && \
-	abs(min_tone_diff(bass_note->prev->data, bass_note->prev->prev->data)) > TONE)
+	/* double leaps in same direction */
+	/* allow in last 2 notes */
+	if (bass_note->prev->prev) {
+		ia = min_tone_diff(bass_note->data, bass_note->prev->data);
+		ib = min_tone_diff(bass_note->prev->data, bass_note->prev->prev->data);
+		if (bass_note->next && bass_note->next->next && \
+		abs(ia) > TONE && abs(ib) > TONE && negative(ia) && negative(ib))
+			fault += 1;
+	}
+	/* sirening */
+	if (bass_note->prev->prev && bass_note->prev->prev->prev && \
+	bass_note->data == bass_note->prev->prev->data &&
+	bass_note->prev->data == bass_note->prev->prev->prev->data)
 		fault += 1;
 	return fault;
 }
 
+/* TODO: count range */
 int
-count_faults(Node *bass_note, Node *mld_note)
+count_faults(Node *bass_note, Node *mld_note, int root, int mode)
 {
-	int c = 0;
+	int c = 0, range = 0;
 
 	while (bass_note && mld_note) {
-		c += faulty_note(bass_note, mld_note);
+		if (bass_note->prev) 
+			range += min_tone_diff(bass_note->data, bass_note->prev->data);
+		c += faulty_note(bass_note, mld_note, root, mode);
 		bass_note = bass_note->prev;
 		mld_note = mld_note->prev;
 	}
+	if (abs(range) > TONES)
+		c += 1000;
 	return c;
 }
 
@@ -222,33 +254,36 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
 	Node *bass_alt_head_a = NULL;
 	Node *bass_alt_head_b = NULL;
 	Node *bass_alt_head_c = NULL;
-	int a_faults, b_faults, c_faults, base_faults;
+	int a_faults = 9999, b_faults = 9999, c_faults = 9999, base_faults = 9999;
 	int ret = 0;
 
 	if (bass_note->next == NULL || mld_note->next == NULL) {
 		/* TODO add middle voice here */
-		return count_faults(bass_note, mld_note);
+		return count_faults(bass_note, mld_note, root, mode);
 	}
 	tmp_note = bass_note->data;
 	mld_degree = calc_degree(mld_note->data, root, mode);
 	old_bass_degree = calc_degree(bass_note->data, root, mode);
-	bass_alt_head_a = copy_list(bass_note);
-	bass_alt_head_b = copy_list(bass_note);
-	bass_alt_head_c = copy_list(bass_note);
-	bass_alt_head_a->prev = bass_note->prev;
-	bass_alt_head_b->prev = bass_note->prev;
-	bass_alt_head_c->prev = bass_note->prev;
 
 	/* try different chord */
-	new_bass_degree = alt_chord_choice(old_bass_degree, mld_degree);
-	bass_alt_head_a->data = apply_steps(0, mode, root, new_bass_degree);
-	a_faults = improve_bass_note(bass_alt_head_a->next, mld_note->next, root, mode);
+	if (mld_degree == I || mld_degree == V) {
+		bass_alt_head_a = copy_list(bass_note);
+		bass_alt_head_b = copy_list(bass_note);
+		bass_alt_head_a->prev = bass_note->prev;
+		bass_alt_head_b->prev = bass_note->prev;
 
-	/* try inverting different chord */
-	bass_alt_head_b->data = apply_steps(new_bass_degree, mode, bass_alt_head_a->data, THIRD);
-	b_faults = improve_bass_note(bass_alt_head_b->next, mld_note->next, root, mode);
+		new_bass_degree = alt_chord_choice(old_bass_degree, mld_degree);
+		bass_alt_head_a->data = apply_steps(I, mode, root, new_bass_degree);
+		a_faults = improve_bass_note(bass_alt_head_a->next, mld_note->next, root, mode);
+
+		/* try inverting different chord */
+		bass_alt_head_b->data = apply_steps(new_bass_degree, mode, bass_alt_head_a->data, THIRD);
+		b_faults = improve_bass_note(bass_alt_head_b->next, mld_note->next, root, mode);
+	}
 
 	/* try inverting original chord */
+	bass_alt_head_c = copy_list(bass_note);
+	bass_alt_head_c->prev = bass_note->prev;
 	bass_alt_head_c->data = apply_steps(old_bass_degree, mode, tmp_note, THIRD);
 	c_faults = improve_bass_note(bass_alt_head_c->next, mld_note->next, root, mode);
 
@@ -326,12 +361,14 @@ main(int argc, char *argv[])
 	Node *melody_tail = NULL, *melody_head = NULL, *bass_head = NULL,
 	     *bass_tail = NULL, *mid_head = NULL;
 
+	/*
 	if (argc < 2) {
 		printf("Please pass seed as arg\n");
 		printf("eg: hrm 5\n");
 		return 1;
 	}
 	srand(atoi(argv[1]));
+	*/
 	c = getchar();
 	while (c != EOF) {
 		do {

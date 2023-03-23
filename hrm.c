@@ -30,66 +30,93 @@ is_primary_degree(int note, int root, int mode)
 
 /* TODO: do the same searh used on bass improvement */
 int
-add_middle_note(Node *bass_note, Node *mld_note, int root, int mode)
+add_middle_note(int bass_note, int mld_note, int root, int mode)
 {
 	/* calculate chord */
 	/* branch for adding 1st, 3rd or 5th */
 	/* evaluate based on smoothness */
 	int chord_root, chord_degree, inverted;
 
-	chord_degree = calc_degree(bass_note->data, root, mode);
-	if (is_primary_degree(bass_note->data, root, mode)) {
-		chord_root = bass_note->data;
+	chord_degree = calc_degree(bass_note, root, mode);
+	if (is_primary_degree(bass_note, root, mode)) {
+		chord_root = bass_note;
 		inverted = FALSE;
 	} else {
-		chord_root = apply_steps(chord_degree, mode, bass_note->data, -THIRD);
+		chord_root = apply_steps(chord_degree, mode, bass_note, -THIRD);
 		inverted = TRUE;
 	}
 	/* if root and fifth then mid must be 3rd */
-	if ((inverted == FALSE) && (mld_note->data == (bass_note->data + FIFTH_TONES) % TONES)) {
+	if ((inverted == FALSE) && (mld_note == apply_steps(chord_degree, mode, chord_root, FIFTH))) {
 		return apply_steps(chord_degree, mode, chord_root, THIRD);
 	}
 	/* if root and third then mid must be 5th or 1st*/
-	if ((inverted == FALSE) && (mld_note->data == apply_steps(chord_degree, mode, chord_root, THIRD))) {
+	if ((inverted == FALSE) && (mld_note == apply_steps(chord_degree, mode, chord_root, THIRD))) {
 		/* TODO: branch here (fifth or first) */
-		return (bass_note->data + FIFTH_TONES) % TONES;
+		return apply_steps(chord_degree, mode, chord_root, FIFTH);
 	}
 	/* if both first then mid must be 3rd */
-	if ((inverted == FALSE) && mld_note->data == bass_note->data) {
+	if ((inverted == FALSE) && mld_note == bass_note) {
 		return apply_steps(chord_degree, mode, chord_root, THIRD);
 	}
 	/* if third and fifth then mid must be first */
-	if ((inverted == TRUE) && (mld_note->data == (chord_root + FIFTH_TONES) % TONES)) {
+	if ((inverted == TRUE) && (mld_note == apply_steps(chord_degree, mode, chord_root, FIFTH))) {
 		return chord_root;
 	}
 	/* if third and third then mid must be first */
-	if ((inverted == TRUE) && (mld_note->data == bass_note->data)) {
+	if ((inverted == TRUE) && (mld_note == bass_note)) {
 		return chord_root;
 	}
 	/* if third and first then mid must be fifth or first */
-	if ((inverted == TRUE) && mld_note->data == chord_root) {
+	if ((inverted == TRUE) && mld_note == chord_root) {
 		/* TODO: branch here */
-		return (bass_note->data + FIFTH_TONES) % TONES;
+		return apply_steps(chord_degree, mode, chord_root, FIFTH);
 	}
 	return ERROR;
 }
 
+/* TODO: branch for adding the 1st, 3rd or 5th of the chord */
+/* focus on minimising movement of the middle line */
 Node *
-generate_middle_line(Node *bass_head, Node *mld_head, int root, int mode)
+generate_middle_line(Node *bass_tail, Node *mld_tail, int root, int mode)
 {
 	/* check if bass note is primary degree */
 	/* if it is then add third if melody is octave or fifth */
 	/* if melody is third then add fifth or octave (whichever is nearer to prev) */
 	Node *mid_head = NULL, *mid_tail = NULL;
-	int mid_note;
+	int mid_note, first, third, fifth, adj_note, dfirst, dthird, dfifth,
+	    chord_degree;
 
-	while (bass_head && mld_head) {
-		mid_note = add_middle_note(bass_head, mld_head, root, mode);
-		mid_tail = append_node(mid_tail, mid_note);
-		if (mid_head == NULL)
-			mid_head = mid_tail;
-		bass_head = bass_head->next;
-		mld_head = mld_head->next;
+	while (bass_tail && mld_tail) {
+		if (mid_tail == NULL) /* add most complete end chord */
+			mid_note = add_middle_note(bass_tail->data, mld_tail->data, root, mode);
+		else { /* use nearest chord tone */
+			chord_degree = calc_degree(bass_tail->data, root, mode);
+			/* if root in bass */
+			if (is_primary_degree(bass_tail->data, root, mode)) {
+				first = bass_tail->data;
+				third = apply_steps(chord_degree, mode, first, THIRD);
+				fifth = apply_steps(chord_degree, mode, first, FIFTH);
+			} else { /* if third in bass */
+				first = apply_steps(chord_degree, mode, bass_tail->data, -THIRD);
+				third = bass_tail->data;
+				fifth = apply_steps(chord_degree-THIRD, mode, first, FIFTH);
+			}
+			adj_note = mid_tail->data;
+			dfirst = abs(min_tone_diff(adj_note, first));
+			dthird = abs(min_tone_diff(adj_note, third));
+			dfifth = abs(min_tone_diff(adj_note, fifth));
+			if (dthird <= dfirst && dthird <= dfifth)
+				mid_note = third;
+			else if (dfifth <= dfirst && dfifth <= dthird)
+				mid_note = fifth;
+			else
+				mid_note = first;
+		}
+		mid_head = prepend_node(mid_head, mid_note);
+		if (mid_tail == NULL)
+			mid_tail = mid_head;
+		bass_tail = bass_tail->prev;
+		mld_tail = mld_tail->prev;
 	}
 	return mid_head;
 }
@@ -198,8 +225,10 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
 	int a_faults, b_faults, c_faults, base_faults;
 	int ret = 0;
 
-	if (bass_note->next == NULL || mld_note->next == NULL)
+	if (bass_note->next == NULL || mld_note->next == NULL) {
+		/* TODO add middle voice here */
 		return count_faults(bass_note, mld_note);
+	}
 	tmp_note = bass_note->data;
 	mld_degree = calc_degree(mld_note->data, root, mode);
 	old_bass_degree = calc_degree(bass_note->data, root, mode);
@@ -317,13 +346,15 @@ main(int argc, char *argv[])
 		scanf("%16s", buf);
 		mode = read_mode(buf);
 		bass_head = generate_bass_line(melody_tail, bass_tail, root, mode);
-		//improve_bass_line(bass_head, melody_head, root, mode);
 		improve_bass_note(bass_head, melody_head, root, mode);
-		mid_head = generate_middle_line(bass_head, melody_head, root, mode);
+		bass_tail = bass_head;
+		while (bass_tail->next)
+			bass_tail = bass_tail->next;
+		mid_head = generate_middle_line(bass_tail, melody_tail, root, mode);
 		printf("mldy: ");
 		print_list(melody_head);
-		//printf("midl: ");
-		//print_list(mid_head);
+		printf("midl: ");
+		print_list(mid_head);
 		printf("bass: ");
 		print_list(bass_head);
 		printf("%s %s\n", NOTES[root], MODES[mode]);

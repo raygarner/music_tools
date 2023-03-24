@@ -372,7 +372,7 @@ main(int argc, char *argv[])
 		print_list(bass_head, TRUE, root, mode);
 		//printf("%s %s\n", NOTES[root], MODES[mode]);
 		putchar('\n');
-		//getchar();
+		getchar();
 		c = getchar();
 		delete_list(melody_head);
 		delete_list(bass_head);

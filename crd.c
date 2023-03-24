@@ -8,23 +8,10 @@
 
 #include "common.h"
 
-void
-apply_bitfield(const int presence[DEGREES], int m, int n)
-{
-	int d;
-
-	for (d = 0; d < DEGREES; d++) {
-		if (presence[d])
-			printf("%s ", NOTES[n]);
-		n = step(d, n, m);
-	}
-}
-
 int
 main(int argc, char *argv[])
 {
-	int mode, i = DEGREES-1, n, key_root, 
-	    chord_degree, chord_root;
+	int mode, i = DEGREES-1, n, key_root, chord_degree, chord_root, alter;
 	char c, buf[BUFLEN], ext;
 
 	if (argc < 2) {
@@ -36,21 +23,34 @@ main(int argc, char *argv[])
 	if ((argc > 2 && argv[2][0] == ALL_KEYS) || (argc > 3 && argv[3][0] == ALL_KEYS)) {
 		for (key_root = 0; key_root < TONES; key_root++) {
 			for (mode = 0; mode < DEGREES; mode++) {
+				alter = get_correct_accidental(key_root, mode);
 				chord_root = apply_steps(I, mode, key_root, chord_degree);
 				n = chord_root;
-				printf("%s ", NOTES[n]);
+				//printf("%s ", NOTES[n]);
+				print_note(alter, n);
+				putchar(' ');
 				n = apply_steps(chord_degree, mode, chord_root, III);
-				printf("%s ", NOTES[n]);
+				//printf("%s ", NOTES[n]);
+				print_note(alter, n);
+				putchar(' ');
 				n = apply_steps(chord_degree, mode, chord_root, V);
-				printf("%s ", NOTES[n]);
+				//printf("%s ", NOTES[n]);
+				print_note(alter, n);
+				putchar(' ');
 				if (argc > 2 && argv[2][0] != ALL_KEYS) {
 					for (i = 0; i < strlen(argv[2]); i++) {
 						ext = argv[2][i];
 						n = apply_steps(chord_degree, mode, chord_root, atoi(&ext)-1);
-						printf("%s ", NOTES[n]);
+						//printf("%s ", NOTES[n]);
+						print_note(alter, n);
+						putchar(' ');
 					}
 				}
-				printf("- %s %s\n", NOTES[key_root], MODES[mode]);
+				//printf("- %s %s\n", NOTES[key_root], MODES[mode]);
+				printf("- ");
+				print_note(alter, key_root);
+				putchar(' ');
+				printf("%s\n", MODES[mode]);
 			}
 		}
 	} else {
@@ -62,38 +62,64 @@ main(int argc, char *argv[])
 			mode = read_mode(buf);
 			if (key_root == X) {
 				for (key_root = 0; key_root < TONES; key_root++) {
+					alter = get_correct_accidental(key_root, mode);
 					chord_root = apply_steps(I, mode, key_root, chord_degree);
 					n = chord_root;
-					printf("%s ", NOTES[n]);
+					//printf("%s ", NOTES[n]);
+					print_note(alter, n);
+					putchar(' ');
 					n = apply_steps(chord_degree, mode, chord_root, III);
-					printf("%s ", NOTES[n]);
+					//printf("%s ", NOTES[n]);
+					print_note(alter, n);
+					putchar(' ');
 					n = apply_steps(chord_degree, mode, chord_root, V);
-					printf("%s ", NOTES[n]);
+					//printf("%s ", NOTES[n]);
+					print_note(alter, n);
+					putchar(' ');
 					if (argc > 2) {
 						for (i = 0; i < strlen(argv[2]); i++) {
 							ext = argv[2][i];
 							n = apply_steps(chord_degree, mode, chord_root, atoi(&ext)-1);
-							printf("%s ", NOTES[n]);
+							//printf("%s ", NOTES[n]);
+							print_note(alter, n);
+							putchar(' ');
 						}
 					}
-					printf("- %s %s\n", NOTES[key_root], MODES[mode]);
+					//printf("- %s %s\n", NOTES[key_root], MODES[mode]);
+					printf("- ");
+					print_note(alter, key_root);
+					putchar(' ');
+					printf("%s\n", MODES[mode]);
 				}
 			} else {
+				alter = get_correct_accidental(key_root, mode);
 				chord_root = apply_steps(I, mode, key_root, chord_degree);
 				n = chord_root;
-				printf("%s ", NOTES[n]);
+				//printf("%s ", NOTES[n]);
+				print_note(alter, n);
+				putchar(' ');
 				n = apply_steps(chord_degree, mode, chord_root, III);
-				printf("%s ", NOTES[n]);
+				//printf("%s ", NOTES[n]);
+				print_note(alter, n);
+				putchar(' ');
 				n = apply_steps(chord_degree, mode, chord_root, V);
-				printf("%s ", NOTES[n]);
+				//printf("%s ", NOTES[n]);
+				print_note(alter, n);
+				putchar(' ');
 				if (argc > 2) {
 					for (i = 0; i < strlen(argv[2]); i++) {
 						ext = argv[2][i];
 						n = apply_steps(chord_degree, mode, chord_root, atoi(&ext)-1);
 						printf("%s ", NOTES[n]);
+						print_note(alter, n);
+						putchar(' ');
 					}
 				}
-				printf("- %s %s\n", NOTES[key_root], MODES[mode]);
+				//printf("- %s %s\n", NOTES[key_root], MODES[mode]);
+				printf("- ");
+				print_note(alter, key_root);
+				putchar(' ');
+				printf("%s\n", MODES[mode]);
 			}
 		}
 	}

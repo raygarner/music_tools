@@ -187,6 +187,12 @@ is_correct_accidental(int root, int mode, int accidental)
 	return TRUE;
 }
 
+int
+get_correct_accidental(int root, int mode)
+{
+	return is_correct_accidental(root, mode, SHARP) ? SHARP : FLAT;
+}
+
 Node *
 prepend_node(Node *head, int data)
 {
@@ -283,5 +289,29 @@ min_tone_diff(int note_a, int note_b)
 		return 0-down_steps;
 	else
 		return up_steps;
+}
+
+void
+print_note(int sign, int note)
+{
+	char alter, buf[2];
+
+	/* if flat key */
+	if (sign == FLAT)
+		alter = '-';
+	else /* if sharp key */
+		alter = '+';
+	if (is_accidental(note)) {
+		if (NOTES[note][1] == alter) { /* if sign is correct */
+			printf("%s", NOTES[note]);
+		} else {
+			note += sign * -1;
+			buf[0] = NOTES[note][0];
+			buf[1] = alter;
+			printf("%s", buf);
+		}
+	} else {
+		printf("%s", NOTES[note]);
+	}
 }
 

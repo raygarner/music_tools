@@ -26,8 +26,9 @@ void
 generate_line(int melody_len, const int notes[DEGREES], int notes_len, 
               int root, int mode)
 {
-	int *melody = NULL, i, tone_diff, step_diff, passing_step, d;
+	int *melody = NULL, i, tone_diff, step_diff, passing_step, d, alter;
 
+	alter = get_correct_accidental(root, mode);
 	melody = calloc(melody_len, sizeof(int));
 	for (i = 0; i < melody_len; i+=2)
 		melody[i] = notes[rand() % notes_len];
@@ -44,9 +45,15 @@ generate_line(int melody_len, const int notes[DEGREES], int notes_len,
 		d = calc_degree(melody[i-1], root, mode);
 		melody[i] = apply_steps(d, mode, melody[i-1], passing_step);
 	}
-	for (i = 0; i < melody_len; i++)
-		printf("%s ", NOTES[melody[i]]);
-	printf("- %s %s\n", NOTES[root], MODES[mode]);
+	for (i = 0; i < melody_len; i++) {
+		print_note(alter, melody[i]);
+		//printf("%s ", NOTES[melody[i]]);
+	}
+//	printf("- %s %s\n", NOTES[root], MODES[mode]);
+	printf("- ");
+	print_note(alter, root);
+	putchar(' ');
+	printf("%s\n", MODES[mode]);
 	free(melody);
 }
 

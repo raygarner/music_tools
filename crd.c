@@ -110,7 +110,7 @@ main(int argc, char *argv[])
 					for (i = 0; i < strlen(argv[2]); i++) {
 						ext = argv[2][i];
 						n = apply_steps(chord_degree, mode, chord_root, atoi(&ext)-1);
-						printf("%s ", NOTES[n]);
+						//printf("%s ", NOTES[n]);
 						print_note(alter, n);
 						putchar(' ');
 					}

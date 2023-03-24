@@ -71,7 +71,7 @@ int get_correct_accidental(int, int);
 Node *prepend_node(Node *, int);
 Node *append_node(Node *, int);
 Node *pop_head(Node *);
-void print_list(const Node *);
+void print_list(const Node *, int, int, int);
 void delete_list(Node *);
 Node *copy_list(Node *);
 int apply_steps(int, int, int, int);

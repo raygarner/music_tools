@@ -123,12 +123,17 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 void
 print_matching_keys(const int key_freq[TONES][DEGREES], int len)
 {
-	int n, m;
+	int n, m, alter;
 
 	for (n = 0; n < TONES; n++) {
 		for (m = 0; m < DEGREES; m++) {
-			if (key_freq[n][m] == len)
-				printf("%2s %s\n", NOTES[n], MODES[m]);
+			if (key_freq[n][m] == len) {
+				alter = get_correct_accidental(n, m);
+				//printf("%2s %s\n", NOTES[n], MODES[m]);
+				print_note(alter, n);
+				putchar(' ');
+				printf("%s\n", MODES[m]);
+			}
 		}
 	}
 }
@@ -229,10 +234,19 @@ pop_head(Node *head)
 }
 
 void
-print_list(const Node *head)
+print_list(const Node *head, int tonal, int root, int mode)
 {
+	int alter;
+
+	if (tonal)
+		alter = get_correct_accidental(root, mode);
 	while (head) {
-		printf("%s ", NOTES[head->data]);
+		if (tonal) {
+			print_note(alter, head->data);
+			putchar(' ');
+		} else {
+			printf("%s ", NOTES[head->data]);
+		}
 		head = head->next;
 	}
 	putchar('\n');

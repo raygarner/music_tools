@@ -364,14 +364,15 @@ main(int argc, char *argv[])
 		while (bass_tail->next)
 			bass_tail = bass_tail->next;
 		mid_head = generate_middle_line(bass_tail, melody_tail, root, mode);
-		printf("mldy: ");
-		print_list(melody_head);
-		printf("midl: ");
-		print_list(mid_head);
-		printf("bass: ");
-		print_list(bass_head);
-		printf("%s %s\n", NOTES[root], MODES[mode]);
-		getchar();
+		//printf("mldy: ");
+		print_list(melody_head, TRUE, root, mode);
+		//printf("midl: ");
+		print_list(mid_head, TRUE, root, mode);
+		//printf("bass: ");
+		print_list(bass_head, TRUE, root, mode);
+		//printf("%s %s\n", NOTES[root], MODES[mode]);
+		putchar('\n');
+		//getchar();
 		c = getchar();
 		delete_list(melody_head);
 		delete_list(bass_head);

@@ -47,6 +47,7 @@ generate_line(int melody_len, const int notes[DEGREES], int notes_len,
 	}
 	for (i = 0; i < melody_len; i++) {
 		print_note(alter, melody[i]);
+		putchar(' ');
 		//printf("%s ", NOTES[melody[i]]);
 	}
 //	printf("- %s %s\n", NOTES[root], MODES[mode]);
@@ -75,7 +76,6 @@ main(int argc, char *argv[])
 		return 1;
 	}
 	melody_len = melody_len % 2 == 0 ? melody_len + 1 : melody_len;
-	srand(atoi(argv[2]));
 	c = getchar();
 	while (c != EOF) {
 		i = 0;
@@ -92,6 +92,7 @@ main(int argc, char *argv[])
 		root = read_tone(c, getchar());
 		scanf("%16s", buf);
 		mode = read_mode(buf);
+		srand(atoi(argv[2]));
 		generate_line(melody_len, notes, notes_len, root, mode);
 		getchar();
 		c = getchar();

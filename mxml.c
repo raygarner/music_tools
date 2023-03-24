@@ -1,5 +1,6 @@
 /* take output from hrm and convert it to musicxml */
 /* print to stdout, let user redirect into file */
+/* note always use sharps to represent chromatics */
 #include <stdio.h>
 
 #include "common.h"
@@ -32,13 +33,23 @@ write_part_def(const char *id, const char *name, const char *indent)
 void
 write_part_line(const char *id, Node *head_note, int octave, const char *indent)
 {
+	char note;
+	int alter;
+
 	printf("%s<part id=\"%s\">\n", indent, id);
 	printf("%s\t<measure number=\"1\">\n", indent);
 	while (head_note) {
 		printf("%s\t\t<note>\n", indent);
 		printf("%s\t\t\t<pitch>\n", indent);
-		printf("%s\t\t\t\t<step>%s</step>\n", indent, "C");
-		printf("%s\t\t\t\t<alter>%d</alter>\n", indent, 0);
+		if (is_accidental(head_note->data)) {
+			note = NOTES[head_note->data-1][0];
+			alter = SHARP;
+		} else {
+			note = NOTES[head_note->data][0];
+			alter = NATURAL;
+		}
+		printf("%s\t\t\t\t<step>%c</step>\n", indent, note);;
+		printf("%s\t\t\t\t<alter>%d</alter>\n", indent, alter);
 		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave);
 		printf("%s\t\t\t</pitch>\n", indent);
 		printf("%s\t\t\t<duration>1</duration>\n", indent);

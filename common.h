@@ -30,7 +30,7 @@ enum {
 
 enum { DOWN = -1, SAME = 0, UP = 1 };
 
-enum { FLAT = -1, SHARP = 1 };
+enum { FLAT = -1, NATURAL = 0, SHARP = 1 };
 
 enum {
 	I,

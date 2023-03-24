@@ -1,7 +1,9 @@
 /* take output from hrm and convert it to musicxml */
 /* print to stdout, let user redirect into file */
 /* note always use sharps to represent chromatics */
+/* can read up to 3 part music */
 #include <stdio.h>
+#include <ctype.h>
 
 #include "common.h"
 
@@ -50,7 +52,7 @@ write_part_line(const char *id, Node *head_note, int octave, const char *indent)
 		}
 		printf("%s\t\t\t\t<step>%c</step>\n", indent, note);;
 		printf("%s\t\t\t\t<alter>%d</alter>\n", indent, alter);
-		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave);
+		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave); /* TODO: make octave be the one nearest to the previous note */
 		printf("%s\t\t\t</pitch>\n", indent);
 		printf("%s\t\t\t<duration>1</duration>\n", indent);
 		printf("%s\t\t\t<type>quarter</type>\n", indent);
@@ -64,24 +66,65 @@ write_part_line(const char *id, Node *head_note, int octave, const char *indent)
 int
 main(int argc, char *argv[])
 {
-	Node *mldy_head = NULL;
-	int i;
+	Node *melody_head = NULL, *melody_tail = NULL, *middle_head = NULL,
+	     *middle_tail = NULL, *bass_head = NULL, *bass_tail = NULL;
+	int i, root, mode;
+	char c, buf[BUFLEN];
 
-	mldy_head = prepend_node(mldy_head, 0);
-	mldy_head = prepend_node(mldy_head, 0);
-	mldy_head = prepend_node(mldy_head, 0);
-	mldy_head = prepend_node(mldy_head, 0);
 	write_headers();
 	printf("<score-partwise version=\"4.0\">\n");
 	printf("\t<part-list>\n");
-	for (i = PARTS-1; i >= 0; i--) {
+	for (i = PARTS-1; i >= 0; i--)
 		write_part_def(ID[i], NAME[i], "\t\t");
-	}
 	printf("\t</part-list>\n");
-	for (i = PARTS-1; i >= 0; i--) {
-		write_part_line(ID[i], mldy_head, OCTAVE[i], "\t");
+	c = getchar();
+	while (c != EOF) {
+		do {
+			if (isspace(c))
+				continue;
+			melody_tail = append_node(melody_tail, read_tone(c, getchar()));
+			if (melody_head == NULL)
+				melody_head = melody_tail;
+		} while ((c = getchar()) != '-');
+		while (isspace(c = getchar())) {}
+		root = read_tone(c, getchar());
+		scanf("%16s", buf);
+		mode = read_mode(buf);
+		c = getchar();
+		do {
+			if (isspace(c))
+				continue;
+			middle_tail = append_node(middle_tail, read_tone(c, getchar()));
+			if (middle_head == NULL)
+				middle_head = middle_tail;
+		} while ((c = getchar()) != '-');
+		while (isspace(c = getchar())) {}
+		root = read_tone(c, getchar());
+		scanf("%16s", buf);
+		mode = read_mode(buf);
+		c = getchar();
+		do {
+			if (isspace(c))
+				continue;
+			bass_tail = append_node(bass_tail, read_tone(c, getchar()));
+			if (bass_head == NULL)
+				bass_head = bass_tail;
+		} while ((c = getchar()) != '-');
+		while (isspace(c = getchar())) {}
+		root = read_tone(c, getchar());
+		scanf("%16s", buf);
+		mode = read_mode(buf);
+		write_part_line(ID[MELODY], melody_head, OCTAVE[MELODY], "\t");
+		write_part_line(ID[MIDDLE], middle_head, OCTAVE[MIDDLE], "\t");
+		write_part_line(ID[BASS], bass_head, OCTAVE[BASS], "\t");
+		delete_list(melody_head);
+		delete_list(middle_head);
+		delete_list(bass_head);
+		c = getchar();
+		while (isspace(c) && c != EOF) {
+			c = getchar();
+		}
 	}
 	printf("</score-partwise>\n");
-	putchar('\n');
 	return 0;
 }

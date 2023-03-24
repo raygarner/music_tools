@@ -249,7 +249,6 @@ print_list(const Node *head, int tonal, int root, int mode)
 		}
 		head = head->next;
 	}
-	putchar('\n');
 }
 
 void

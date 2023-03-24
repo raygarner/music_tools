@@ -1,9 +1,9 @@
 refactor crd
 
 mxml
-	read lines into array of linked lists
-	figure out how to do accidentals
 	sequence multiple outputs into one file
+	make last note longer duration
+	fix part range octave problem
 
 program to detect paralell fifths, paralell octaves etc
 

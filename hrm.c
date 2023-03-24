@@ -318,7 +318,7 @@ main(int argc, char *argv[])
 	/* add bassline to make each beat a chord I, IV or V in either root */
 	/* or first inversion */
 	char c, buf[BUFLEN];
-	int root = -1, mode = -1;
+	int root = -1, mode = -1, alter;
 	Node *melody_tail = NULL, *melody_head = NULL, *bass_head = NULL,
 	     *bass_tail = NULL, *mid_head = NULL;
 
@@ -342,11 +342,24 @@ main(int argc, char *argv[])
 			bass_tail = bass_tail->next;
 		mid_head = generate_middle_line(bass_tail, melody_tail, root, mode);
 		//printf("mldy: ");
+		alter = get_correct_accidental(root, mode);
 		print_list(melody_head, TRUE, root, mode);
+		printf("- ");
+		print_note(alter, root);
+		putchar(' ');
+		printf("%s\n", MODES[mode]);
 		//printf("midl: ");
 		print_list(mid_head, TRUE, root, mode);
+		printf("- ");
+		print_note(alter, root);
+		putchar(' ');
+		printf("%s\n", MODES[mode]);
 		//printf("bass: ");
 		print_list(bass_head, TRUE, root, mode);
+		printf("- ");
+		print_note(alter, root);
+		putchar(' ');
+		printf("%s\n", MODES[mode]);
 		//printf("%s %s\n", NOTES[root], MODES[mode]);
 		putchar('\n');
 		getchar();

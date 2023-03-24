@@ -1,3 +1,11 @@
+program to detect paralell fifths, paralell octaves etc
+
+add extra middle voice with hrm
+
+program to convert to musicxml
+
+fix hrm end bass note (dont hardcode root note, might have to be imperfect cadence)
+
 make hrm end on the chord tone
 
 make hrm harmonise a list of melodies

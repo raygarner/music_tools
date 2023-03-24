@@ -1,7 +1,7 @@
 .POSIX:
 
 DEST = /usr/bin
-SRC = md.c crd.c cf.c fb.c int.c ks.c mld.c hrm.c
+SRC = md.c crd.c cf.c fb.c int.c ks.c mld.c hrm.c mxml.c
 EXES = $(SRC:.c=)
 COMMON = common
 MYCFLAGS = -Wall $(CFLAGS)
@@ -12,14 +12,14 @@ full: clean all
 	sudo make install
 
 options:
-	@echo "DEST   = $(DEST)"
-	@echo "SRC    = $(SRC)"
-	@echo "EXES   = $(EXES)"
+	@echo "DEST     = $(DEST)"
+	@echo "SRC      = $(SRC)"
+	@echo "EXES     = $(EXES)"
 	@echo "MYCFLAGS = $(MYCFLAGS)"
-	@echo "CC     = $(CC)"
+	@echo "CC       = $(CC)"
 
 clean:
-	rm -f $(EXES) music_tools.tar.gz
+	rm -f $(EXES) *.musicxml music_tools.tar.gz
 
 install: all
 	cp -f $(EXES) $(DEST)
@@ -57,4 +57,7 @@ mld:
 hrm:
 	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 
+mxml:
+	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
+	
 .PHONY: all full options clean install uninstall dist

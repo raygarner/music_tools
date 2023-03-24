@@ -74,6 +74,7 @@ add_middle_note(int bass_note, int mld_note, int root, int mode)
 
 /* TODO: branch for adding the 1st, 3rd or 5th of the chord */
 /* focus on minimising movement of the middle line */
+/* make sure every chord has a first and third */
 Node *
 generate_middle_line(Node *bass_tail, Node *mld_tail, int root, int mode)
 {
@@ -119,21 +120,12 @@ generate_middle_line(Node *bass_tail, Node *mld_tail, int root, int mode)
 	return mid_head;
 }
 
-/* TODO: remove frequency stuff */
 int
-pick_primary_chord(int mld_degree, const int freq[DEGREES])
+pick_primary_chord(int mld_degree)
 {
 	switch (mld_degree) {
 	case I: /* I or IV */
-		if (freq[I] < freq[IV])
-			return I;
-		//else if (freq[IV] < freq[I])
-		else
-			return IV;
-		/*
-		else
-			return rand() % 2 ? I : IV;
-		*/
+		return I;
 	case II:
 		return V;
 	case III:
@@ -141,15 +133,7 @@ pick_primary_chord(int mld_degree, const int freq[DEGREES])
 	case IV:
 		return IV;
 	case V: /* I or V */
-		if (freq[I] < freq[V])
-			return I;
-		//else if (freq[V] < freq[I])
-		else
-			return V;
-		/*
-		else
-			return rand() % 2 ? I : V;
-		*/
+		return I;
 	case VI:
 		return IV;
 	case VII:
@@ -164,7 +148,7 @@ negative(int x)
 	return x < 0;
 }
 
-/* TODO: encourage stepwise apart from last 2 notes */
+/* TODO: encourage stepwise apart from last 2 notes? */
 int
 faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
@@ -308,19 +292,12 @@ Node *
 generate_bass_line(Node *melody_tail, Node *bass_tail, int root, int mode)
 {
 	Node *bass_head = NULL, *melody_note = melody_tail;
-	int bass_note, mld_degree, i, chord, freq[DEGREES];
+	int bass_note, mld_degree, chord;
 
-	for (i = 0; i < DEGREES; i++)
-		freq[i] = 0;
 	while (melody_note) {
 		mld_degree = calc_degree(melody_note->data, root, mode);
-		if (melody_note->next == NULL) {
-			bass_note = root;
-		} else {
-			chord = pick_primary_chord(mld_degree, freq);
-			bass_note = apply_steps(0, mode, root, chord);
-			freq[chord]++;
-		}
+		chord = pick_primary_chord(mld_degree);
+		bass_note = apply_steps(0, mode, root, chord);
 		bass_head = prepend_node(bass_head, bass_note);
 		if (bass_tail == NULL)
 			bass_tail = bass_head;

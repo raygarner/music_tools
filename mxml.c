@@ -62,7 +62,6 @@ write_part_line(const char *id, Node *head_note, int octave, int clef,
 		}
 		printf("%s\t\t\t\t<step>%c</step>\n", indent, note);;
 		printf("%s\t\t\t\t<alter>%d</alter>\n", indent, alter);
-
 		/* calc octave */
 		if (head_note->prev) {
 			interval = min_tone_diff(head_note->prev->data, head_note->data);
@@ -74,11 +73,13 @@ write_part_line(const char *id, Node *head_note, int octave, int clef,
 				octave++;
 			}
 		}
-
 		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave); /* TODO: make octave be the one nearest to the previous note */
 		printf("%s\t\t\t</pitch>\n", indent);
 		printf("%s\t\t\t<duration>1</duration>\n", indent);
-		printf("%s\t\t\t<type>quarter</type>\n", indent);
+		if (head_note->next)
+			printf("%s\t\t\t<type>quarter</type>\n", indent);
+		else
+			printf("%s\t\t\t<type>whole</type>\n", indent);
 		printf("%s\t\t</note>\n", indent);
 		head_note = head_note->next;
 	}

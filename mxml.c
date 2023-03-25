@@ -14,7 +14,7 @@ enum { BASS, MIDDLE, MELODY };
 
 const char *ID[PARTS] = { "bass", "middle", "melody" };
 const char *NAME[PARTS] = { "low", "mid", "high" };
-const int OCTAVE[PARTS] = { 2, 4, 5 };
+const int OCTAVE[PARTS] = { 3, 5, 6 };
 
 void
 write_headers()

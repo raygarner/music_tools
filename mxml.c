@@ -9,11 +9,12 @@
 
 #define PARTS 3
 
+enum { BASS_CLEF, TREBLE_CLEF };
 enum { BASS, MIDDLE, MELODY };
 
-const char *ID[PARTS] = { "bass", "middle", "melody" };
-const char *NAME[PARTS] = { "Bass", "Middle", "Melody" };
-const int OCTAVE[PARTS] = { 4, 5, 6 };
+const char *ID[PARTS] = { "a", "b", "c" };
+const char *NAME[PARTS] = { "x", "y", "z" };
+const int OCTAVE[PARTS] = { 2, 4, 5 };
 
 void
 write_headers()
@@ -33,13 +34,22 @@ write_part_def(const char *id, const char *name, const char *indent)
 }
 
 void
-write_part_line(const char *id, Node *head_note, int octave, const char *indent)
+write_part_line(const char *id, Node *head_note, int octave, int clef, 
+                const char *indent)
 {
 	char note;
-	int alter;
+	int alter, interval;
 
 	printf("%s<part id=\"%s\">\n", indent, id);
 	printf("%s\t<measure number=\"1\">\n", indent);
+	if (clef == BASS_CLEF) {
+		printf("%s\t\t<attributes>\n", indent);
+		printf("%s\t\t\t<clef>\n", indent);
+		printf("%s\t\t\t\t<sign>F</sign>\n", indent);
+		printf("%s\t\t\t\t<line>4</line>\n", indent);
+		printf("%s\t\t\t</clef>\n", indent);
+		printf("%s\t\t</attributes>\n", indent);
+	}
 	while (head_note) {
 		printf("%s\t\t<note>\n", indent);
 		printf("%s\t\t\t<pitch>\n", indent);
@@ -52,6 +62,19 @@ write_part_line(const char *id, Node *head_note, int octave, const char *indent)
 		}
 		printf("%s\t\t\t\t<step>%c</step>\n", indent, note);;
 		printf("%s\t\t\t\t<alter>%d</alter>\n", indent, alter);
+
+		/* calc octave */
+		if (head_note->prev) {
+			interval = min_tone_diff(head_note->prev->data, head_note->data);
+			/* if we have wrapped wround (passed into a different octave */
+			/* if the interval downwards and the new note value is above the previous one then we have stepped down an octave*/
+			if (interval < 0 && head_note->prev->data < head_note->data) {
+				octave--;
+			} else if (interval > 0 && head_note->prev->data > head_note->data) {
+				octave++;
+			}
+		}
+
 		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave); /* TODO: make octave be the one nearest to the previous note */
 		printf("%s\t\t\t</pitch>\n", indent);
 		printf("%s\t\t\t<duration>1</duration>\n", indent);
@@ -114,9 +137,9 @@ main(int argc, char *argv[])
 		root = read_tone(c, getchar());
 		scanf("%16s", buf);
 		mode = read_mode(buf);
-		write_part_line(ID[MELODY], melody_head, OCTAVE[MELODY], "\t");
-		write_part_line(ID[MIDDLE], middle_head, OCTAVE[MIDDLE], "\t");
-		write_part_line(ID[BASS], bass_head, OCTAVE[BASS], "\t");
+		write_part_line(ID[MELODY], melody_head, OCTAVE[MELODY], TREBLE_CLEF, "\t");
+		write_part_line(ID[MIDDLE], middle_head, OCTAVE[MIDDLE], TREBLE_CLEF, "\t");
+		write_part_line(ID[BASS], bass_head, OCTAVE[BASS], BASS_CLEF, "\t");
 		delete_list(melody_head);
 		delete_list(middle_head);
 		delete_list(bass_head);

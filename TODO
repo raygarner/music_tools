@@ -3,7 +3,8 @@ refactor crd
 mxml
 	sequence multiple outputs into one file
 	make last note longer duration
-	fix part range octave problem
+	make it able to read output from mld
+	write key signatures
 
 program to detect paralell fifths, paralell octaves etc
 

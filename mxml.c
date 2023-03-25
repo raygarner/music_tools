@@ -38,7 +38,7 @@ write_part_line(const char *id, Node *head_note, int octave, int clef,
                 const char *indent)
 {
 	char note;
-	int alter, interval;
+	int alter, interval, base_octave = octave;
 
 	printf("%s<part id=\"%s\">\n", indent, id);
 	printf("%s\t<measure number=\"1\">\n", indent);
@@ -63,7 +63,7 @@ write_part_line(const char *id, Node *head_note, int octave, int clef,
 		printf("%s\t\t\t\t<step>%c</step>\n", indent, note);;
 		printf("%s\t\t\t\t<alter>%d</alter>\n", indent, alter);
 		/* calc octave */
-		if (head_note->prev) {
+		if (head_note->prev && head_note->prev->data != X) {
 			interval = min_tone_diff(head_note->prev->data, head_note->data);
 			/* if we have wrapped wround (passed into a different octave */
 			/* if the interval downwards and the new note value is above the previous one then we have stepped down an octave*/
@@ -73,15 +73,19 @@ write_part_line(const char *id, Node *head_note, int octave, int clef,
 				octave++;
 			}
 		}
-		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave); /* TODO: make octave be the one nearest to the previous note */
+		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave); 
 		printf("%s\t\t\t</pitch>\n", indent);
 		printf("%s\t\t\t<duration>1</duration>\n", indent);
-		if (head_note->next)
+		if (head_note->next && head_note->next->data != X)
 			printf("%s\t\t\t<type>quarter</type>\n", indent);
 		else
 			printf("%s\t\t\t<type>whole</type>\n", indent);
 		printf("%s\t\t</note>\n", indent);
 		head_note = head_note->next;
+		if (head_note->data == X) {
+			head_note = head_note->next;
+			octave = base_octave;
+		}
 	}
 	printf("%s\t</measure>\n", indent);
 	printf("%s</part>\n", indent);
@@ -111,6 +115,7 @@ main(int argc, char *argv[])
 				melody_head = melody_tail;
 		} while ((c = getchar()) != '-');
 		while (isspace(c = getchar())) {}
+		melody_tail = append_node(melody_tail, X);
 		root = read_tone(c, getchar());
 		scanf("%16s", buf);
 		mode = read_mode(buf);
@@ -123,6 +128,7 @@ main(int argc, char *argv[])
 				middle_head = middle_tail;
 		} while ((c = getchar()) != '-');
 		while (isspace(c = getchar())) {}
+		middle_tail = append_node(middle_tail, X);
 		root = read_tone(c, getchar());
 		scanf("%16s", buf);
 		mode = read_mode(buf);
@@ -135,20 +141,21 @@ main(int argc, char *argv[])
 				bass_head = bass_tail;
 		} while ((c = getchar()) != '-');
 		while (isspace(c = getchar())) {}
+		bass_tail = append_node(bass_tail, X);
 		root = read_tone(c, getchar());
 		scanf("%16s", buf);
 		mode = read_mode(buf);
-		write_part_line(ID[MELODY], melody_head, OCTAVE[MELODY], TREBLE_CLEF, "\t");
-		write_part_line(ID[MIDDLE], middle_head, OCTAVE[MIDDLE], TREBLE_CLEF, "\t");
-		write_part_line(ID[BASS], bass_head, OCTAVE[BASS], BASS_CLEF, "\t");
-		delete_list(melody_head);
-		delete_list(middle_head);
-		delete_list(bass_head);
 		c = getchar();
 		while (isspace(c) && c != EOF) {
 			c = getchar();
 		}
 	}
+	write_part_line(ID[MELODY], melody_head, OCTAVE[MELODY], TREBLE_CLEF, "\t");
+	write_part_line(ID[MIDDLE], middle_head, OCTAVE[MIDDLE], TREBLE_CLEF, "\t");
+	write_part_line(ID[BASS], bass_head, OCTAVE[BASS], BASS_CLEF, "\t");
+	delete_list(melody_head);
+	delete_list(middle_head);
+	delete_list(bass_head);
 	printf("</score-partwise>\n");
 	return 0;
 }

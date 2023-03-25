@@ -1,7 +1,6 @@
 refactor crd
 
 mxml
-	sequence multiple outputs into one file
 	make it able to read output from mld
 	write key signatures
 

@@ -12,8 +12,8 @@
 enum { BASS_CLEF, TREBLE_CLEF };
 enum { BASS, MIDDLE, MELODY };
 
-const char *ID[PARTS] = { "a", "b", "c" };
-const char *NAME[PARTS] = { "x", "y", "z" };
+const char *ID[PARTS] = { "bass", "middle", "melody" };
+const char *NAME[PARTS] = { "low", "mid", "high" };
 const int OCTAVE[PARTS] = { 2, 4, 5 };
 
 void

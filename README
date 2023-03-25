@@ -1,7 +1,6 @@
 Abstract
 ========
-AKA 'Unix style computer aided composition'- CLI C programs providing music
-functions which can be connected with pipes
+CLI C programs providing music functions which can be connected with pipes
 
 Build:
 $ make
@@ -11,5 +10,4 @@ $ sudo make install
 
 Uninstall:
 $ sudo make uninstall
-
 

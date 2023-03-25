@@ -174,14 +174,16 @@ faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 	abs(min_tone_diff(bass_note->data, bass_note->prev->data)) > \
 	abs(min_tone_diff(bass_note->data, apply_steps(bass_degree, mode, bass_note->data, FOURTH))))
 		fault += 1;
-	/* double leaps in same direction */
+	/* double leaps */
 	/* allow in last 2 notes */
 	if (bass_note->prev->prev) {
 		ia = min_tone_diff(bass_note->data, bass_note->prev->data);
 		ib = min_tone_diff(bass_note->prev->data, bass_note->prev->prev->data);
 		if (bass_note->next && bass_note->next->next && \
-		abs(ia) > TONE && abs(ib) > TONE && negative(ia) && negative(ib))
+		abs(ia) > TONE && abs(ib) > TONE ) { //&& negative(ia) && negative(ib)) {
+			//fault += 500;
 			fault += 1;
+		}
 	}
 	/* sirening */
 	if (bass_note->prev->prev && bass_note->prev->prev->prev && \

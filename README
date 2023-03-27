@@ -27,3 +27,6 @@ $ md cnf+ - | int n2n4n5 | cf
 
 $ md cnf+ - | int n2n4n5 | fb
 	fb : show each mode on a guitar fretboard
+
+$ ks an ionian + : check whether A natural Ionian key signature can be written
+                   using sharps (without using double sharps)

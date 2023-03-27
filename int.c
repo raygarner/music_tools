@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 		printf("eg: int -3-7n6 (flat 3rd, flat 7th, natural 6th)\n");
 		return 1;
 	}
-	for (i = 0; i < len-1; i+=2) { /* for each flattened degree */
+	for (i = 0; i < len-1; i+=2) {
 		for (m = 0; m < DEGREES; m++) { /* for each mode */
 			alter = read_accidental(argv[1][i]);
 			tmp = argv[1][i+1];

@@ -4,6 +4,9 @@ mxml
 	make it able to read output from mld
 	write key signatures
 
+hrm:
+	check for tritone intervals when adding middle line
+
 program to detect paralell fifths, paralell octaves etc
 
 standalone fb usage

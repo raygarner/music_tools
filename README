@@ -11,3 +11,19 @@ $ sudo make install
 Uninstall:
 $ sudo make uninstall
 
+
+Examples
+========
+$ md cnf+ - | int n2n4n5 | crd 1 | mld 6 1 | hrm | mxml > out.musicxml
+	md cnf+ -  : all modes containing C natural and F sharp
+	int n2n4n5 : all modes with natural 2, 4, and 5 degrees
+	crd 1      : tonic triad for each mode
+	mld 6 1    : 6 note melody with seed value 1
+	hrm        : haronise as 3 voice chord melody
+	mxml       : convert to musicxml format
+
+$ md cnf+ - | int n2n4n5 | cf
+	cf : show each key signature on treble clef stave
+
+$ md cnf+ - | int n2n4n5 | fb
+	fb : show each mode on a guitar fretboard

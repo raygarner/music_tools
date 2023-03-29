@@ -26,7 +26,6 @@ is_primary_degree(int note, int root, int mode)
 	return FALSE;
 }
 
-/* TODO: do the same searh used on bass improvement */
 int
 add_middle_note(int bass_note, int mld_note, int root, int mode)
 {
@@ -78,9 +77,8 @@ min(int a, int b)
 	return a < b ? a : b;
 }
 
-/* TODO: branch for adding the 1st, 3rd or 5th of the chord */
-/* focus on minimising movement of the middle line */
-/* make sure every chord has a first and third */
+/* starts at final chord adding most complete note */
+/* works back adding nearest chord tone */
 Node *
 generate_middle_line(Node *bass_tail, Node *mld_tail, int root, int mode)
 {
@@ -168,9 +166,8 @@ faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 	if (bass_note->data == mld_note->data && bass_note->prev->data == mld_note->prev->data)
 		fault += 1;
 	/* tritone leap */
-	if (abs(min_tone_diff(bass_note->data, bass_note->prev->data)) == TRITONE) {
+	if (abs(min_tone_diff(bass_note->data, bass_note->prev->data)) == TRITONE)
 		fault += 1;
-	}
 	/* paralell fifths */
 	bass_degree = calc_degree(bass_note->data, root, mode);
 	prev_bass_degree = calc_degree(bass_note->prev->data, root, mode);
@@ -237,20 +234,15 @@ alt_chord_choice(int chord, int mld_degree)
 /* a) use different chord */
 /* b) invert chord */
 /* c) use different chord and invert */
-/* TODO: valgrind this */
 int
 improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode, Node **best_head)
 {
-	int tmp_note, mld_degree, old_bass_degree, new_bass_degree;
-	Node *bass_alt_head_a = NULL;
-	Node *bass_alt_head_b = NULL;
-	Node *bass_alt_head_c = NULL;
-	Node *def_head = NULL;
-	Node *def_line = NULL;
-	Node *a_line = NULL, *b_line = NULL, *c_line = NULL;
-	int a_faults = 9999, b_faults = 9999, c_faults = 9999, base_faults = 9999;
-	int ret = 0;
-	int inverted_note;
+	int tmp_note, mld_degree, old_bass_degree, new_bass_degree, 
+	    a_faults = 9999, b_faults = 9999, c_faults = 9999, 
+	    base_faults = 9999, ret = 0, inverted_note;
+	Node *bass_alt_head_a = NULL, *bass_alt_head_b = NULL,
+	     *bass_alt_head_c = NULL, *def_head = NULL, *def_line = NULL,
+	     *a_line = NULL, *b_line = NULL, *c_line = NULL;
 
 	if (bass_note->next == NULL || mld_note->next == NULL) {
 		/* TODO add middle voice here */
@@ -351,14 +343,6 @@ generate_bass_line(Node *melody_tail, Node **bass_tail, int root, int mode)
 int
 main(int argc, char *argv[])
 {
-	/* while not EOF keep reading notes */
-	/* linked list of notes */
-	/* start with brute force algo for finding best result */
-
-	/* read into linked list */
-	/* start at end of melody */
-	/* add bassline to make each beat a chord I, IV or V in either root */
-	/* or first inversion */
 	char c, buf[BUFLEN];
 	int root = -1, mode = -1, alter;
 	Node *melody_tail = NULL, *melody_head = NULL, *bass_head = NULL,

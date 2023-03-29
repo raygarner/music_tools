@@ -48,9 +48,7 @@ generate_line(int melody_len, const int notes[DEGREES], int notes_len,
 	for (i = 0; i < melody_len; i++) {
 		print_note(alter, melody[i]);
 		putchar(' ');
-		//printf("%s ", NOTES[melody[i]]);
 	}
-//	printf("- %s %s\n", NOTES[root], MODES[mode]);
 	printf("- ");
 	print_note(alter, root);
 	putchar(' ');

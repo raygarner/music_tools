@@ -96,7 +96,7 @@ main(int argc, char *argv[])
 {
 	Node *melody_head = NULL, *melody_tail = NULL, *middle_head = NULL,
 	     *middle_tail = NULL, *bass_head = NULL, *bass_tail = NULL;
-	int i, root, mode;
+	int i;
 	char c, buf[BUFLEN];
 
 	write_headers();
@@ -116,9 +116,9 @@ main(int argc, char *argv[])
 		} while ((c = getchar()) != '-');
 		while (isspace(c = getchar())) {}
 		melody_tail = append_node(melody_tail, X);
-		root = read_tone(c, getchar());
+		read_tone(c, getchar());
 		scanf("%16s", buf);
-		mode = read_mode(buf);
+		read_mode(buf);
 		c = getchar();
 		do {
 			if (isspace(c))
@@ -129,9 +129,9 @@ main(int argc, char *argv[])
 		} while ((c = getchar()) != '-');
 		while (isspace(c = getchar())) {}
 		middle_tail = append_node(middle_tail, X);
-		root = read_tone(c, getchar());
+		read_tone(c, getchar());
 		scanf("%16s", buf);
-		mode = read_mode(buf);
+		read_mode(buf);
 		c = getchar();
 		do {
 			if (isspace(c))
@@ -142,9 +142,9 @@ main(int argc, char *argv[])
 		} while ((c = getchar()) != '-');
 		while (isspace(c = getchar())) {}
 		bass_tail = append_node(bass_tail, X);
-		root = read_tone(c, getchar());
+		read_tone(c, getchar());
 		scanf("%16s", buf);
-		mode = read_mode(buf);
+		read_mode(buf);
 		c = getchar();
 		while (isspace(c) && c != EOF) {
 			c = getchar();

@@ -84,7 +84,7 @@ print_key_sig(int flat_key, int altered[DEGREES])
 	print_empty_line();
 }
 
-int*
+int *
 note_status(int flat_key, int accidentals)
 {
 	int *altered = malloc(sizeof(int) * DEGREES);

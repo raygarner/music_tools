@@ -263,6 +263,18 @@ delete_list(Node *head)
 	}
 }
 
+void
+delete_list_from_tail(Node *tail)
+{
+	Node *n;
+
+	while (tail) {
+		n = tail->prev;
+		free(tail);
+		tail = n;
+	}
+}
+
 Node *
 copy_list(Node *src_head)
 {
@@ -273,6 +285,18 @@ copy_list(Node *src_head)
 		if (dest_head == NULL)
 			dest_head = dest_tail;
 		src_head = src_head->next;
+	}
+	return dest_head;
+}
+
+Node *
+copy_list_from_tail(Node *src_tail)
+{
+	Node *dest_head = NULL;
+
+	while (src_tail) {
+		dest_head = prepend_node(dest_head, src_tail->data);
+		src_tail = src_tail->prev;
 	}
 	return dest_head;
 }

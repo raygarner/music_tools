@@ -157,7 +157,7 @@ negative(int x)
 int
 faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
-	int fault = 0, bass_degree, prev_bass_degree, ia, ib, ic;
+	int fault = 0, bass_degree, prev_bass_degree, ia, ib;
 
 	if (!(bass_note->prev && mld_note->prev))
 		return 0;
@@ -245,7 +245,7 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode, Node **be
 	Node *bass_alt_head_a = NULL;
 	Node *bass_alt_head_b = NULL;
 	Node *bass_alt_head_c = NULL;
-	Node *def_head = NULL, *def_tail = NULL;
+	Node *def_head = NULL;
 	Node *def_line = NULL;
 	Node *a_line = NULL, *b_line = NULL, *c_line = NULL;
 	int a_faults = 9999, b_faults = 9999, c_faults = 9999, base_faults = 9999;

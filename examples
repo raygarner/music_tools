@@ -1,3 +1,0 @@
-echo "cn ionian" | crd 1 | mld 6 1 | hrm | mxml
-
-

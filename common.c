@@ -129,7 +129,6 @@ print_matching_keys(const int key_freq[TONES][DEGREES], int len)
 		for (m = 0; m < DEGREES; m++) {
 			if (key_freq[n][m] == len) {
 				alter = get_correct_accidental(n, m);
-				//printf("%2s %s\n", NOTES[n], MODES[m]);
 				print_note(alter, n);
 				putchar(' ');
 				printf("%s\n", MODES[m]);
@@ -154,16 +153,6 @@ calc_degree(int note, int root, int mode)
 int
 is_diatonic(int note, int root, int mode)
 {
-	/*
-	int d, cn = root;
-
-	for (d = 0; d < DEGREES; d++) {
-		if (cn == note)
-			return TRUE;
-		cn = step(d, cn, mode);
-	}
-	return FALSE;
-	*/
 	return calc_degree(note, root, mode) == ERROR ? FALSE : TRUE;
 }
 

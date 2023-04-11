@@ -22,13 +22,12 @@ count_scale_steps(int root, int mode, int start_note, int end_note)
 	return ERROR;
 }
 
-void
+int *
 generate_line(int melody_len, const int notes[DEGREES], int notes_len, 
               int root, int mode)
 {
-	int *melody = NULL, i, tone_diff, step_diff, passing_step, d, alter;
+	int *melody = NULL, i, tone_diff, step_diff, passing_step, d;
 
-	alter = get_correct_accidental(root, mode);
 	melody = calloc(melody_len, sizeof(int));
 	for (i = 0; i < melody_len; i+=2)
 		melody[i] = notes[rand() % notes_len];
@@ -45,15 +44,7 @@ generate_line(int melody_len, const int notes[DEGREES], int notes_len,
 		d = calc_degree(melody[i-1], root, mode);
 		melody[i] = apply_steps(d, mode, melody[i-1], passing_step);
 	}
-	for (i = 0; i < melody_len; i++) {
-		print_note(alter, melody[i]);
-		putchar(' ');
-	}
-	printf("- ");
-	print_note(alter, root);
-	putchar(' ');
-	printf("%s\n", MODES[mode]);
-	free(melody);
+	return melody;
 }
 
 int
@@ -61,7 +52,7 @@ main(int argc, char *argv[])
 {
 	char c, buf[BUFLEN];
 	int notes[DEGREES], notes_len, melody_len, i, mode, 
-	    root;
+	    root, *melody, alter;
 
 	if (argc < 2) {
 		printf("Please pass melody length and seed as args\n");
@@ -91,7 +82,17 @@ main(int argc, char *argv[])
 		scanf("%16s", buf);
 		mode = read_mode(buf);
 		srand(atoi(argv[2]));
-		generate_line(melody_len, notes, notes_len, root, mode);
+		melody = generate_line(melody_len, notes, notes_len, root, mode);
+		alter = get_correct_accidental(root, mode);
+		for (i = 0; i < melody_len; i++) {
+			print_note(alter, melody[i]);
+			putchar(' ');
+		}
+		printf("- ");
+		print_note(alter, root);
+		putchar(' ');
+		printf("%s\n", MODES[mode]);
+		free(melody);
 		getchar();
 		c = getchar();
 	}

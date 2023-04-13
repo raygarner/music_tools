@@ -61,7 +61,7 @@ int clock_mod(int, int);
 int step(int, int, int);
 void init_key_field(int[TONES][DEGREES], int);
 void read_key_list(int[TONES][DEGREES], int);
-void print_matching_keys(const int[TONES][DEGREES], int);
+void print_matching_keys(int[TONES][DEGREES], int);
 void print_mode(int);
 int calc_degree(int note, int root, int mode);
 int is_diatonic(int, int, int);

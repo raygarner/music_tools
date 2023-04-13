@@ -121,7 +121,7 @@ read_key_list(int key_field[TONES][DEGREES], int val)
 }
 
 void
-print_matching_keys(const int key_freq[TONES][DEGREES], int len)
+print_matching_keys(int key_freq[TONES][DEGREES], int len)
 {
 	int n, m, alter;
 
@@ -320,7 +320,7 @@ min_tone_diff(int note_a, int note_b)
 void
 print_note(int sign, int note)
 {
-	char alter, buf[2];
+	char alter, buf[3];
 
 	/* if flat key */
 	if (sign == FLAT)
@@ -334,6 +334,7 @@ print_note(int sign, int note)
 			note += sign * -1;
 			buf[0] = NOTES[note][0];
 			buf[1] = alter;
+			buf[2] = '\0';
 			printf("%s", buf);
 		}
 	} else {

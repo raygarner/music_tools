@@ -1,10 +1,8 @@
-.POSIX:
-
 DEST = /usr/bin
 SRC = md.c crd.c cf.c fb.c int.c ks.c mld.c hrm.c mxml.c
 EXES = $(SRC:.c=)
 COMMON = common
-MYCFLAGS = -Wall $(CFLAGS)
+MYCFLAGS = -std=c99 -Wall -pedantic
 
 all: $(EXES)
 

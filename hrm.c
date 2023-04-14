@@ -244,11 +244,9 @@ Path
 improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
 	int tmp_note, mld_degree, old_bass_degree, new_bass_degree, 
-	    a_faults = 9999, b_faults = 9999, c_faults = 9999, 
-	    base_faults = 9999, ret = 0, inverted_note;
+	    inverted_note;
 	Node *bass_alt_head_a = NULL, *bass_alt_head_b = NULL,
-	     *bass_alt_head_c = NULL, *def_head = NULL, *def_line = NULL,
-	     *a_line = NULL, *b_line = NULL, *c_line = NULL;
+	     *bass_alt_head_c = NULL, *def_head = NULL;
 	Path best_path, a_path, b_path, c_path, def_path;
 
 	best_path.head = NULL;

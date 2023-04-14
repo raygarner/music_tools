@@ -13,6 +13,12 @@
 enum { THIRD = 2, FOURTH = 3, FIFTH = 4, SIXTH = 5 };
 enum { FOURTH_TONES = 5, TRITONE = 6, FIFTH_TONES = 7 };
 
+typedef struct Path Path;
+struct Path {
+	int faults;
+	Node *head;
+};
+
 /* is degree I, IV or V */
 int
 is_primary_degree(int note, int root, int mode)
@@ -234,8 +240,8 @@ alt_chord_choice(int chord, int mld_degree)
 /* a) use different chord */
 /* b) invert chord */
 /* c) use different chord and invert */
-int
-improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode, Node **best_head)
+Path
+improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
 	int tmp_note, mld_degree, old_bass_degree, new_bass_degree, 
 	    a_faults = 9999, b_faults = 9999, c_faults = 9999, 
@@ -243,11 +249,24 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode, Node **be
 	Node *bass_alt_head_a = NULL, *bass_alt_head_b = NULL,
 	     *bass_alt_head_c = NULL, *def_head = NULL, *def_line = NULL,
 	     *a_line = NULL, *b_line = NULL, *c_line = NULL;
+	Path best_path, a_path, b_path, c_path, def_path;
+
+	best_path.head = NULL;
+	a_path.head = NULL;
+	b_path.head = NULL;
+	c_path.head = NULL;
+	def_path.head = NULL;
+
+	best_path.faults = 9999;
+	a_path.faults = 9999;
+	b_path.faults = 9999;
+	c_path.faults = 9999;
+	def_path.faults = 9999;
 
 	if (bass_note->next == NULL || mld_note->next == NULL) {
-		/* TODO add middle voice here */
-		*best_head = copy_list_from_tail(bass_note);
-		return count_faults(bass_note, mld_note, root, mode);
+		best_path.head = copy_list_from_tail(bass_note);
+		best_path.faults = count_faults(bass_note, mld_note, root, mode);
+		return best_path;
 	}
 	tmp_note = bass_note->data;
 	mld_degree = calc_degree(mld_note->data, root, mode);
@@ -260,7 +279,7 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode, Node **be
 
 		new_bass_degree = alt_chord_choice(old_bass_degree, mld_degree);
 		bass_alt_head_a->data = apply_steps(I, mode, root, new_bass_degree);
-		a_faults = improve_bass_note(bass_alt_head_a->next, mld_note->next, root, mode, &a_line);
+		a_path = improve_bass_note(bass_alt_head_a->next, mld_note->next, root, mode);
 
 		/* try inverting different chord */
 		inverted_note = apply_steps(new_bass_degree, mode, bass_alt_head_a->data, THIRD);
@@ -268,7 +287,7 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode, Node **be
 			bass_alt_head_b = copy_list(bass_note);
 			bass_alt_head_b->prev = bass_note->prev;
 			bass_alt_head_b->data = apply_steps(new_bass_degree, mode, bass_alt_head_a->data, THIRD);
-			b_faults = improve_bass_note(bass_alt_head_b->next, mld_note->next, root, mode, &b_line);
+			b_path = improve_bass_note(bass_alt_head_b->next, mld_note->next, root, mode);
 		}
 	}
 
@@ -278,48 +297,40 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode, Node **be
 		bass_alt_head_c = copy_list(bass_note);
 		bass_alt_head_c->prev = bass_note->prev;
 		bass_alt_head_c->data = inverted_note;
-		c_faults = improve_bass_note(bass_alt_head_c->next, mld_note->next, root, mode, &c_line);
+		c_path = improve_bass_note(bass_alt_head_c->next, mld_note->next, root, mode);
 	}
 
 	/* base faults */
 	def_head = copy_list(bass_note);
 	def_head->prev = bass_note->prev;
-	base_faults = improve_bass_note(def_head->next, mld_note->next, root, mode, &def_line);
+	def_path = improve_bass_note(def_head->next, mld_note->next, root, mode);
 
-	if (base_faults <= a_faults && base_faults <= b_faults && base_faults <= c_faults) {
-		bass_note->data = tmp_note;
-		ret = base_faults;
-		*best_head = def_line;
-		delete_list(a_line);
-		delete_list(b_line);
-		delete_list(c_line);
-	} else if (a_faults <= base_faults && a_faults <= b_faults && a_faults <= c_faults) {
-		bass_note->data = bass_alt_head_a->data;
-		ret = a_faults;
-		*best_head = a_line;
-		delete_list(def_line);
-		delete_list(b_line);
-		delete_list(c_line);
-	} else if (b_faults <= base_faults && b_faults <= a_faults && b_faults <= c_faults) {
-		bass_note->data = bass_alt_head_b->data;
-		ret = b_faults;
-		*best_head = b_line;
-		delete_list(def_line);
-		delete_list(a_line);
-		delete_list(c_line);
+	if (def_path.faults <= a_path.faults && def_path.faults <= b_path.faults && def_path.faults <= c_path.faults) {
+		best_path = def_path;
+		delete_list(a_path.head);
+		delete_list(b_path.head);
+		delete_list(c_path.head);
+	} else if (a_path.faults <= def_path.faults && a_path.faults <= b_path.faults && a_path.faults <= c_path.faults) {
+		best_path = a_path;
+		delete_list(def_path.head);
+		delete_list(b_path.head);
+		delete_list(c_path.head);
+	} else if (b_path.faults <= def_path.faults && b_path.faults <= a_path.faults && b_path.faults <= c_path.faults) {
+		best_path = b_path;
+		delete_list(def_path.head);
+		delete_list(a_path.head);
+		delete_list(c_path.head);
 	} else {
-		bass_note->data = bass_alt_head_c->data;
-		ret = c_faults;
-		*best_head = c_line;
-		delete_list(def_line);
-		delete_list(a_line);
-		delete_list(b_line);
+		best_path = c_path;
+		delete_list(def_path.head);
+		delete_list(a_path.head);
+		delete_list(b_path.head);
 	}
 	delete_list(def_head);
 	delete_list(bass_alt_head_a);
 	delete_list(bass_alt_head_b);
 	delete_list(bass_alt_head_c);
-	return ret;
+	return best_path;
 }
 
 Node *
@@ -348,6 +359,7 @@ main(int argc, char *argv[])
 	Node *melody_tail = NULL, *melody_head = NULL, *bass_head = NULL,
 	     *bass_tail = NULL, *mid_head = NULL, *new_bass_head = NULL,
 	     *new_bass_tail = NULL;
+	Path improved_bass;
 
 	c = getchar();
 	while (c != EOF) {
@@ -363,7 +375,8 @@ main(int argc, char *argv[])
 		scanf("%16s", buf);
 		mode = read_mode(buf);
 		bass_head = generate_bass_line(melody_tail, &bass_tail, root, mode);
-		improve_bass_note(bass_head, melody_head, root, mode, &new_bass_head);
+		improved_bass = improve_bass_note(bass_head, melody_head, root, mode);
+		new_bass_head = improved_bass.head;
 		delete_list(bass_head);
 		new_bass_tail = new_bass_head;
 		while (new_bass_tail->next)

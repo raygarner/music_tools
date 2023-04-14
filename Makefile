@@ -3,6 +3,7 @@ SRC = md.c crd.c cf.c fb.c int.c ks.c mld.c hrm.c mxml.c
 EXES = $(SRC:.c=)
 COMMON = common
 MYCFLAGS = -std=c99 -Wall -pedantic
+CC = c99
 
 all: $(EXES)
 

@@ -19,7 +19,7 @@ struct Path {
 	Node *head;
 };
 
-Path improve_bass_note(Node*, Node*, int, int);
+Path improve_bass_line(Node*, Node*, int, int);
 
 /* is degree I, IV or V */
 int
@@ -293,7 +293,7 @@ get_alt_path(Node *bass_note, Node *mld_note, int root, int mode)
 	old_degree = calc_degree(bass_note->data, root, mode);
 	new_degree = alt_chord_choice(old_degree, mld_degree);
 	alt_head->data = apply_steps(I, mode, root, new_degree);
-	ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+	ret = improve_bass_line(alt_head->next, mld_note->next, root, mode);
 	delete_list(alt_head);
 	return ret;
 
@@ -318,7 +318,7 @@ get_inverted_alt_path(Node *bass_note, Node *mld_note, int root, int mode)
 	alt_note = apply_steps(I, mode, root, new_degree);
 	if (mld_note->data == alt_note) {
 		alt_head->data = apply_steps(new_degree, mode, alt_note, THIRD);
-		ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+		ret = improve_bass_line(alt_head->next, mld_note->next, root, mode);
 	}
 	delete_list(alt_head);
 	return ret;
@@ -339,7 +339,7 @@ get_inverted_path(Node *bass_note, Node *mld_note, int root, int mode)
 	alt_head->prev = bass_note->prev;
 	old_degree = calc_degree(bass_note->data, root, mode);
 	alt_head->data = apply_steps(old_degree, mode, bass_note->data, THIRD);
-	ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+	ret = improve_bass_line(alt_head->next, mld_note->next, root, mode);
 	delete_list(alt_head);
 	return ret;
 }
@@ -352,7 +352,7 @@ get_default_path(Node *bass_note, Node *mld_note, int root, int mode)
 
 	alt_head = copy_list(bass_note);
 	alt_head->prev = bass_note->prev;
-	ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+	ret = improve_bass_line(alt_head->next, mld_note->next, root, mode);
 	delete_list(alt_head);
 	return ret;
 }
@@ -389,12 +389,8 @@ handle_path_choice(Path *a, Path *b, Path *c, Path *d)
 	}
 }
 
-/* 3 choices: */
-/* a) use different chord */
-/* b) invert chord */
-/* c) use different chord and invert */
 Path
-improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
+improve_bass_line(Node *bass_note, Node *mld_note, int root, int mode)
 {
 	Path a_path, b_path, c_path, def_path, full_path;
 
@@ -449,7 +445,7 @@ main(int argc, char *argv[])
 		scanf("%16s", buf);
 		mode = read_mode(buf);
 		bass_head = generate_bass_line(melody_tail, root, mode);
-		improved_bass = improve_bass_note(bass_head, melody_head, root, mode);
+		improved_bass = improve_bass_line(bass_head, melody_head, root, mode);
 		delete_list(bass_head);
 		bass_head = improved_bass.head;
 		bass_tail = bass_head;

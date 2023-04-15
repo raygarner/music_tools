@@ -1,7 +1,6 @@
-refactor crd
-
 mxml
 	make it able to read output from mld
+	make it able to read output from crd
 	write key signatures
 
 hrm:

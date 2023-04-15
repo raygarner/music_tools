@@ -357,6 +357,38 @@ get_default_path(Node *bass_note, Node *mld_note, int root, int mode)
 	return ret;
 }
 
+Path *
+handle_path_choice(Path *a, Path *b, Path *c, Path *d)
+{
+	if (a->faults <= b->faults && 
+	a->faults <= c->faults && 
+	a->faults <= d->faults) {
+		delete_list(b->head);
+		delete_list(c->head);
+		delete_list(d->head);
+		return a;
+	} else if (b->faults <= a->faults && 
+	b->faults <= c->faults && 
+	b->faults <= d->faults) {
+		delete_list(a->head);
+		delete_list(c->head);
+		delete_list(d->head);
+		return b;
+	} else if (c->faults <= a->faults && 
+	c->faults <= b->faults && 
+	c->faults <= d->faults) {
+		delete_list(a->head);
+		delete_list(b->head);
+		delete_list(d->head);
+		return c;
+	} else {
+		delete_list(a->head);
+		delete_list(b->head);
+		delete_list(c->head);
+		return d;
+	}
+}
+
 /* 3 choices: */
 /* a) use different chord */
 /* b) invert chord */
@@ -375,33 +407,7 @@ improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
 	b_path = get_inverted_alt_path(bass_note, mld_note, root, mode);
 	c_path = get_inverted_path(bass_note, mld_note, root, mode);
 	def_path = get_default_path(bass_note, mld_note, root, mode);
-	if (def_path.faults <= a_path.faults && 
-	def_path.faults <= b_path.faults && 
-	def_path.faults <= c_path.faults) {
-		delete_list(a_path.head);
-		delete_list(b_path.head);
-		delete_list(c_path.head);
-		return def_path;
-	} else if (a_path.faults <= def_path.faults && 
-	a_path.faults <= b_path.faults && 
-	a_path.faults <= c_path.faults) {
-		delete_list(def_path.head);
-		delete_list(b_path.head);
-		delete_list(c_path.head);
-		return a_path;
-	} else if (b_path.faults <= def_path.faults && 
-	b_path.faults <= a_path.faults && 
-	b_path.faults <= c_path.faults) {
-		delete_list(def_path.head);
-		delete_list(a_path.head);
-		delete_list(c_path.head);
-		return b_path;
-	} else {
-		delete_list(def_path.head);
-		delete_list(a_path.head);
-		delete_list(b_path.head);
-		return c_path;
-	}
+	return *handle_path_choice(&a_path, &b_path, &c_path, &def_path);
 }
 
 Node *

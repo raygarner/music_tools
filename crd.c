@@ -1,6 +1,3 @@
-/* $ echo "an aeolian" | crd 1 9
- * An Cn En Gn */
-/* crd <degree of triad> <extension notes> */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

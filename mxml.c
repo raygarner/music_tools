@@ -1,7 +1,3 @@
-/* take output from hrm and convert it to musicxml */
-/* print to stdout, let user redirect into file */
-/* note always use sharps to represent chromatics */
-/* can read up to 3 part music */
 #include <stdio.h>
 #include <ctype.h>
 
@@ -33,12 +29,25 @@ write_part_def(const char *id, const char *name, const char *indent)
 	printf("%s</score-part>\n", indent);
 }
 
+int
+octave_change(int x, int y)
+{
+	int interval = min_tone_diff(x, y);
+
+	if (interval < 0 && x < y)
+		return -1;
+	else if (interval > 0 && x > y)
+		return 1;
+	else
+		return 0;
+}
+
 void
 write_part_line(const char *id, Node *head_note, int octave, int clef, 
                 const char *indent)
 {
 	char note;
-	int alter, interval, base_octave = octave;
+	int alter, base_octave = octave;
 
 	printf("%s<part id=\"%s\">\n", indent, id);
 	printf("%s\t<measure number=\"1\">\n", indent);
@@ -63,16 +72,9 @@ write_part_line(const char *id, Node *head_note, int octave, int clef,
 		printf("%s\t\t\t\t<step>%c</step>\n", indent, note);;
 		printf("%s\t\t\t\t<alter>%d</alter>\n", indent, alter);
 		/* calc octave */
-		if (head_note->prev && head_note->prev->data != X) {
-			interval = min_tone_diff(head_note->prev->data, head_note->data);
-			/* if we have wrapped wround (passed into a different octave */
-			/* if the interval downwards and the new note value is above the previous one then we have stepped down an octave*/
-			if (interval < 0 && head_note->prev->data < head_note->data) {
-				octave--;
-			} else if (interval > 0 && head_note->prev->data > head_note->data) {
-				octave++;
-			}
-		}
+		if (head_note->prev && head_note->prev->data != X)
+			octave += octave_change(head_note->prev->data, 
+			                        head_note->data);
 		printf("%s\t\t\t\t<octave>%d</octave>\n", indent, octave); 
 		printf("%s\t\t\t</pitch>\n", indent);
 		printf("%s\t\t\t<duration>1</duration>\n", indent);
@@ -91,13 +93,32 @@ write_part_line(const char *id, Node *head_note, int octave, int clef,
 	printf("%s</part>\n", indent);
 }
 
+void
+read_line(char c, Node **head, Node **tail)
+{
+	char buf[BUFLEN];
+
+	do {
+		if (isspace(c))
+			continue;
+		*tail = append_node(*tail, read_tone(c, getchar()));
+		if (*head == NULL)
+			*head = *tail;
+	} while ((c = getchar()) != '-');
+	while (isspace(c = getchar())) {}
+	*tail = append_node(*tail, X);
+	read_tone(c, getchar());
+	scanf("%16s", buf);
+	read_mode(buf);
+}
+
 int
 main(int argc, char *argv[])
 {
 	Node *melody_head = NULL, *melody_tail = NULL, *middle_head = NULL,
 	     *middle_tail = NULL, *bass_head = NULL, *bass_tail = NULL;
 	int i;
-	char c, buf[BUFLEN];
+	char c;
 
 	write_headers();
 	printf("<score-partwise version=\"4.0\">\n");
@@ -107,48 +128,14 @@ main(int argc, char *argv[])
 	printf("\t</part-list>\n");
 	c = getchar();
 	while (c != EOF) {
-		do {
-			if (isspace(c))
-				continue;
-			melody_tail = append_node(melody_tail, read_tone(c, getchar()));
-			if (melody_head == NULL)
-				melody_head = melody_tail;
-		} while ((c = getchar()) != '-');
-		while (isspace(c = getchar())) {}
-		melody_tail = append_node(melody_tail, X);
-		read_tone(c, getchar());
-		scanf("%16s", buf);
-		read_mode(buf);
+		read_line(c, &melody_head, &melody_tail);
 		c = getchar();
-		do {
-			if (isspace(c))
-				continue;
-			middle_tail = append_node(middle_tail, read_tone(c, getchar()));
-			if (middle_head == NULL)
-				middle_head = middle_tail;
-		} while ((c = getchar()) != '-');
-		while (isspace(c = getchar())) {}
-		middle_tail = append_node(middle_tail, X);
-		read_tone(c, getchar());
-		scanf("%16s", buf);
-		read_mode(buf);
+		read_line(c, &middle_head, &middle_tail);
 		c = getchar();
-		do {
-			if (isspace(c))
-				continue;
-			bass_tail = append_node(bass_tail, read_tone(c, getchar()));
-			if (bass_head == NULL)
-				bass_head = bass_tail;
-		} while ((c = getchar()) != '-');
-		while (isspace(c = getchar())) {}
-		bass_tail = append_node(bass_tail, X);
-		read_tone(c, getchar());
-		scanf("%16s", buf);
-		read_mode(buf);
+		read_line(c, &bass_head, &bass_tail);
 		c = getchar();
-		while (isspace(c) && c != EOF) {
+		while (isspace(c) && c != EOF)
 			c = getchar();
-		}
 	}
 	write_part_line(ID[MELODY], melody_head, OCTAVE[MELODY], TREBLE_CLEF, "\t");
 	write_part_line(ID[MIDDLE], middle_head, OCTAVE[MIDDLE], TREBLE_CLEF, "\t");

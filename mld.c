@@ -1,6 +1,3 @@
-/* build melody from chord input (including key mode)
- * put chord notes on strong beats (even beats)
- * fill gaps with most stepwise notes */
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>

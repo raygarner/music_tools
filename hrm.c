@@ -1,9 +1,3 @@
-/* hrm: harmonise
- * takes a list of notes (eg output from crd) and adds an accompany part
- * beneath it (bass voice)
- * additionally takes a key sig to use to generate the bass voice
- */
-
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -21,7 +15,6 @@ struct Path {
 
 Path improve_bass_line(Node*, Node*, int, int);
 
-/* is degree I, IV or V */
 int
 is_primary_degree(int note, int root, int mode)
 {
@@ -102,7 +95,8 @@ decide_mid_note(const Node *mid_tail, int bass_note, int mld_note, int root,
                 int mode)
 {
 	if (mid_tail)
-		return calc_next_mid_note(mid_tail->data, bass_note, root, mode);
+		return calc_next_mid_note(mid_tail->data, bass_note, root, 
+		                          mode);
 	else
 		return add_middle_note(bass_note, mld_note, root, mode);
 }
@@ -181,7 +175,8 @@ is_fifth(int mld_note, int bass_note, int bass_degree, int mode)
 }
 
 int
-is_parallel_fifth(const Node *bass_note, const Node *mld_note, int root, int mode)
+is_parallel_fifth(const Node *bass_note, const Node *mld_note, int root, 
+                  int mode)
 {
 	int bass_degree, prev_bass_degree, prev_mld, prev_bass;
 
@@ -245,7 +240,8 @@ count_faults(Node *bass_note, Node *mld_note, int root, int mode)
 
 	while (bass_note && mld_note) {
 		if (bass_note->prev) {
-			interval = min_tone_diff(bass_note->data, bass_note->prev->data);
+			interval = min_tone_diff(bass_note->data, 
+			                         bass_note->prev->data);
 			range += interval;
 			if (abs(interval) > TONE) {
 				leaps++;
@@ -318,7 +314,8 @@ get_inverted_alt_path(Node *bass_note, Node *mld_note, int root, int mode)
 	alt_note = apply_steps(I, mode, root, new_degree);
 	if (mld_note->data == alt_note) {
 		alt_head->data = apply_steps(new_degree, mode, alt_note, THIRD);
-		ret = improve_bass_line(alt_head->next, mld_note->next, root, mode);
+		ret = improve_bass_line(alt_head->next, mld_note->next, root, 
+		                        mode);
 	}
 	delete_list(alt_head);
 	return ret;
@@ -396,7 +393,8 @@ improve_bass_line(Node *bass_note, Node *mld_note, int root, int mode)
 
 	if (bass_note->next == NULL || mld_note->next == NULL) {
 		full_path.head = copy_list_from_tail(bass_note);
-		full_path.faults = count_faults(bass_note, mld_note, root, mode);
+		full_path.faults = count_faults(bass_note, mld_note, root, 
+		                                mode);
 		return full_path;
 	}
 	a_path = get_alt_path(bass_note, mld_note, root, mode);
@@ -436,7 +434,8 @@ main(int argc, char *argv[])
 		do {
 			if (isspace(c))
 				continue;
-			melody_tail = append_node(melody_tail, read_tone(c, getchar()));
+			melody_tail = append_node(melody_tail, 
+			                          read_tone(c, getchar()));
 			if (melody_head == NULL)
 				melody_head = melody_tail;
 		} while ((c = getchar()) != '-');
@@ -445,13 +444,15 @@ main(int argc, char *argv[])
 		scanf("%16s", buf);
 		mode = read_mode(buf);
 		bass_head = generate_bass_line(melody_tail, root, mode);
-		improved_bass = improve_bass_line(bass_head, melody_head, root, mode);
+		improved_bass = improve_bass_line(bass_head, melody_head, root, 
+		                                  mode);
 		delete_list(bass_head);
 		bass_head = improved_bass.head;
 		bass_tail = bass_head;
 		while (bass_tail->next)
 			bass_tail = bass_tail->next;
-		mid_head = generate_middle_line(bass_tail, melody_tail, root, mode);
+		mid_head = generate_middle_line(bass_tail, melody_tail, root, 
+		                                mode);
 		alter = get_correct_accidental(root, mode);
 		print_list(melody_head, TRUE, root, mode);
 		printf("- ");

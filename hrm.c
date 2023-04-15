@@ -10,7 +10,7 @@
 
 #include "common.h"
 
-enum { THIRD = 2, FOURTH = 3, FIFTH = 4, SIXTH = 5 };
+enum { FIRST, SECOND, THIRD, FOURTH, FIFTH, SIXTH };
 enum { FOURTH_TONES = 5, TRITONE = 6, FIFTH_TONES = 7 };
 
 typedef struct Path Path;
@@ -18,6 +18,8 @@ struct Path {
 	int faults;
 	Node *head;
 };
+
+Path improve_bass_note(Node*, Node*, int, int);
 
 /* is degree I, IV or V */
 int
@@ -35,44 +37,29 @@ is_primary_degree(int note, int root, int mode)
 int
 add_middle_note(int bass_note, int mld_note, int root, int mode)
 {
-	/* calculate chord */
-	/* branch for adding 1st, 3rd or 5th */
-	/* evaluate based on smoothness */
-	int chord_root, chord_degree, inverted;
+	int bass_degree, first_degree, mld_degree, mld_function, first_pitch,
+	    third_pitch, fifth_pitch, inverted;
 
-	chord_degree = calc_degree(bass_note, root, mode);
+	bass_degree = calc_degree(bass_note, root, mode);
 	if (is_primary_degree(bass_note, root, mode)) {
-		chord_root = bass_note;
+		first_degree = bass_degree;
 		inverted = FALSE;
 	} else {
-		chord_root = apply_steps(chord_degree, mode, bass_note, -THIRD);
+		first_degree = clock_mod(bass_degree - THIRD, DEGREES);
 		inverted = TRUE;
 	}
-	/* if root and fifth then mid must be 3rd */
-	if ((inverted == FALSE) && (mld_note == apply_steps(chord_degree, mode, chord_root, FIFTH))) {
-		return apply_steps(chord_degree, mode, chord_root, THIRD);
-	}
-	/* if root and third then mid must be 5th or 1st*/
-	if ((inverted == FALSE) && (mld_note == apply_steps(chord_degree, mode, chord_root, THIRD))) {
-		/* TODO: branch here (fifth or first) */
-		return apply_steps(chord_degree, mode, chord_root, FIFTH);
-	}
-	/* if both first then mid must be 3rd */
-	if ((inverted == FALSE) && mld_note == bass_note) {
-		return apply_steps(chord_degree, mode, chord_root, THIRD);
-	}
-	/* if third and fifth then mid must be first */
-	if ((inverted == TRUE) && (mld_note == apply_steps(chord_degree, mode, chord_root, FIFTH))) {
-		return chord_root;
-	}
-	/* if third and third then mid must be first */
-	if ((inverted == TRUE) && (mld_note == bass_note)) {
-		return chord_root;
-	}
-	/* if third and first then mid must be fifth or first */
-	if ((inverted == TRUE) && mld_note == chord_root) {
-		/* TODO: branch here */
-		return apply_steps(chord_degree, mode, chord_root, FIFTH);
+	mld_degree = calc_degree(mld_note, root, mode);
+	mld_function = clock_mod(mld_degree - first_degree, DEGREES);
+	first_pitch = apply_steps(FIRST, mode, root, first_degree);
+	third_pitch = apply_steps(first_degree, mode, first_pitch, THIRD);
+	fifth_pitch = apply_steps(first_degree, mode, first_pitch, FIFTH);
+	switch (mld_function) {
+	case FIRST:
+		return inverted ? fifth_pitch : third_pitch;
+	case THIRD:
+		return inverted ? first_pitch : fifth_pitch;
+	case FIFTH:
+		return inverted ? first_pitch : third_pitch;
 	}
 	return ERROR;
 }
@@ -83,44 +70,54 @@ min(int a, int b)
 	return a < b ? a : b;
 }
 
+int
+calc_next_mid_note(int adj_note, int bass_note, int root, int mode)
+{
+	int chord_degree, first, third, fifth, dfirst, dthird, dfifth;
+
+	chord_degree = calc_degree(bass_note, root, mode);
+	/* if root in bass */
+	if (is_primary_degree(bass_note, root, mode)) {
+		first = bass_note;
+		third = apply_steps(chord_degree, mode, first, THIRD);
+		fifth = apply_steps(chord_degree, mode, first, FIFTH);
+	} else { /* if third in bass */
+		first = apply_steps(chord_degree, mode, bass_note, -THIRD);
+		third = bass_note;
+		fifth = apply_steps(chord_degree-THIRD, mode, first, FIFTH);
+	}
+	dfirst = abs(min_tone_diff(adj_note, first));
+	dthird = abs(min_tone_diff(adj_note, third));
+	dfifth = abs(min_tone_diff(adj_note, fifth));
+	if (dthird <= dfirst && dthird <= dfifth)
+		return third;
+	else if (dfifth <= dfirst && dfifth <= dthird)
+		return fifth;
+	else
+		return first;
+}
+
+int
+decide_mid_note(const Node *mid_tail, int bass_note, int mld_note, int root, 
+                int mode)
+{
+	if (mid_tail)
+		return calc_next_mid_note(mid_tail->data, bass_note, root, mode);
+	else
+		return add_middle_note(bass_note, mld_note, root, mode);
+}
+
 /* starts at final chord adding most complete note */
 /* works back adding nearest chord tone */
 Node *
 generate_middle_line(Node *bass_tail, Node *mld_tail, int root, int mode)
 {
-	/* check if bass note is primary degree */
-	/* if it is then add third if melody is octave or fifth */
-	/* if melody is third then add fifth or octave (whichever is nearer to prev) */
 	Node *mid_head = NULL, *mid_tail = NULL;
-	int mid_note, first, third, fifth, adj_note, dfirst, dthird, dfifth,
-	    chord_degree;
+	int mid_note;
 
 	while (bass_tail && mld_tail) {
-		if (mid_tail == NULL) /* add most complete end chord */
-			mid_note = add_middle_note(bass_tail->data, mld_tail->data, root, mode);
-		else { /* use nearest chord tone */
-			chord_degree = calc_degree(bass_tail->data, root, mode);
-			/* if root in bass */
-			if (is_primary_degree(bass_tail->data, root, mode)) {
-				first = bass_tail->data;
-				third = apply_steps(chord_degree, mode, first, THIRD);
-				fifth = apply_steps(chord_degree, mode, first, FIFTH);
-			} else { /* if third in bass */
-				first = apply_steps(chord_degree, mode, bass_tail->data, -THIRD);
-				third = bass_tail->data;
-				fifth = apply_steps(chord_degree-THIRD, mode, first, FIFTH);
-			}
-			adj_note = mid_tail->data;
-			dfirst = abs(min_tone_diff(adj_note, first));
-			dthird = abs(min_tone_diff(adj_note, third));
-			dfifth = abs(min_tone_diff(adj_note, fifth));
-			if (dthird <= dfirst && dthird <= dfifth)
-				mid_note = third;
-			else if (dfifth <= dfirst && dfifth <= dthird)
-				mid_note = fifth;
-			else
-				mid_note = first;
-		}
+		mid_note = decide_mid_note(mid_tail, bass_tail->data, 
+		                           mld_tail->data, root, mode);
 		mid_head = prepend_node(mid_head, mid_note);
 		if (mid_tail == NULL)
 			mid_tail = mid_head;
@@ -159,40 +156,85 @@ negative(int x)
 }
 
 int
+is_consecutive_pitch(const Node *line)
+{
+	return line->data == line->prev->data;
+}
+
+int
+is_parallel_octaves(const Node *part_a, const Node *part_b)
+{
+	return part_a->data == part_b->data &&
+	       part_a->prev->data == part_b->prev->data;
+}
+
+int
+is_tritone_leap(const Node *line)
+{
+	return abs(min_tone_diff(line->data, line->prev->data)) == TRITONE;
+}
+
+int
+is_fifth(int mld_note, int bass_note, int bass_degree, int mode)
+{
+	return mld_note == apply_steps(bass_degree, mode, bass_note, FIFTH);
+}
+
+int
+is_parallel_fifth(const Node *bass_note, const Node *mld_note, int root, int mode)
+{
+	int bass_degree, prev_bass_degree, prev_mld, prev_bass;
+
+	bass_degree = calc_degree(bass_note->data, root, mode);
+	prev_bass_degree = calc_degree(bass_note->prev->data, root, mode);
+	prev_mld = mld_note->prev->data;
+	prev_bass = bass_note->prev->data;
+	return is_fifth(mld_note->data, bass_note->data, bass_degree, mode) &&
+	       is_fifth(prev_mld, prev_bass, prev_bass_degree, mode);
+}
+
+int
+is_same_dir(int a, int b)
+{
+	return negative(a) == negative(b);
+}
+
+int
+is_double_leap_same_dir(const Node *bass_note)
+{
+	int ia, ib;
+
+	if (bass_note == NULL || bass_note->prev == NULL ||
+	bass_note->prev->prev == NULL)
+		return FALSE;
+	ia = min_tone_diff(bass_note->data, bass_note->prev->data);
+	ib = min_tone_diff(bass_note->prev->data, bass_note->prev->prev->data);
+	return (abs(ia) > TONE && abs(ib) > TONE && is_same_dir(ia, ib));
+}
+
+int
+is_siren(const Node *bass_note)
+{
+	if (bass_note == NULL || bass_note->prev == NULL ||
+	bass_note->prev->prev == NULL || bass_note->prev->prev->prev == NULL)
+		return FALSE;
+	return (bass_note->data == bass_note->prev->prev->data &&
+	bass_note->prev->data == bass_note->prev->prev->prev->data);
+}
+
+int
 faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
-	int fault = 0, bass_degree, prev_bass_degree, ia, ib;
+	int fault = 0;
 
 	if (!(bass_note->prev && mld_note->prev))
 		return 0;
-	/* if consecutive bass notes */
-	if (bass_note->prev->data == bass_note->data)
-		fault += 1;
-	/* parallel octaves */
-	if (bass_note->data == mld_note->data && bass_note->prev->data == mld_note->prev->data)
-		fault += 1;
-	/* tritone leap */
-	if (abs(min_tone_diff(bass_note->data, bass_note->prev->data)) == TRITONE)
-		fault += 1;
-	/* paralell fifths */
-	bass_degree = calc_degree(bass_note->data, root, mode);
-	prev_bass_degree = calc_degree(bass_note->prev->data, root, mode);
-	if ((mld_note->data == apply_steps(bass_degree, mode, bass_note->data, FIFTH) && \
-	mld_note->prev->data == apply_steps(prev_bass_degree, mode, bass_note->prev->data, FIFTH)))
-		fault += 1;
-	/* double leaps in same direction */
-	if (bass_note->prev->prev) {
-		ia = min_tone_diff(bass_note->data, bass_note->prev->data);
-		ib = min_tone_diff(bass_note->prev->data, bass_note->prev->prev->data);
-		if (abs(ia) > TONE && abs(ib) > TONE && negative(ia) && negative(ib)) {
-			fault += 1;
-		}
-	}
-	/* sirening */
-	if (bass_note->prev->prev && bass_note->prev->prev->prev && \
-	bass_note->data == bass_note->prev->prev->data &&
-	bass_note->prev->data == bass_note->prev->prev->prev->data)
-		fault += 1;
+	fault += is_consecutive_pitch(bass_note);
+	fault += is_parallel_octaves(bass_note, mld_note);
+	fault += is_tritone_leap(bass_note);
+	fault += is_parallel_fifth(bass_note, mld_note, root, mode);
+	fault += is_double_leap_same_dir(bass_note);
+	fault += is_siren(bass_note);
 	return fault;
 }
 
@@ -215,12 +257,10 @@ count_faults(Node *bass_note, Node *mld_note, int root, int mode)
 		bass_note = bass_note->prev;
 		mld_note = mld_note->prev;
 	}
-	/*
 	if (abs(range) > TONES)
 		c += abs(range) - TONES;
 	if (leaps > steps)
 		c += leaps-steps;
-	*/
 	return c;
 }
 
@@ -236,6 +276,87 @@ alt_chord_choice(int chord, int mld_degree)
 	return chord;
 }
 
+Path
+get_alt_path(Node *bass_note, Node *mld_note, int root, int mode)
+{
+	Path ret;
+	Node *alt_head;
+	int new_degree, old_degree, mld_degree;
+
+	ret.faults = 9999;
+	ret.head = NULL;
+	mld_degree = calc_degree(mld_note->data, root, mode);
+	if ((mld_degree == I || mld_degree == V) == FALSE)
+		return ret;
+	alt_head = copy_list(bass_note);
+	alt_head->prev = bass_note->prev;
+	old_degree = calc_degree(bass_note->data, root, mode);
+	new_degree = alt_chord_choice(old_degree, mld_degree);
+	alt_head->data = apply_steps(I, mode, root, new_degree);
+	ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+	delete_list(alt_head);
+	return ret;
+
+}
+
+Path
+get_inverted_alt_path(Node *bass_note, Node *mld_note, int root, int mode)
+{
+	Path ret;
+	Node *alt_head;
+	int new_degree, old_degree, alt_note, mld_degree;
+
+	ret.faults = 9999;
+	ret.head = NULL;
+	mld_degree = calc_degree(mld_note->data, root, mode);
+	if ((mld_degree == I || mld_degree == V) == FALSE)
+		return ret;
+	alt_head = copy_list(bass_note);
+	alt_head->prev = bass_note->prev;
+	old_degree = calc_degree(bass_note->data, root, mode);
+	new_degree = alt_chord_choice(old_degree, mld_degree);
+	alt_note = apply_steps(I, mode, root, new_degree);
+	if (mld_note->data == alt_note) {
+		alt_head->data = apply_steps(new_degree, mode, alt_note, THIRD);
+		ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+	}
+	delete_list(alt_head);
+	return ret;
+}
+
+Path
+get_inverted_path(Node *bass_note, Node *mld_note, int root, int mode)
+{
+	Path ret;
+	Node *alt_head;
+	int old_degree;
+
+	ret.faults = 9999;
+	ret.head = NULL;
+	if (bass_note->data != mld_note->data)
+		return ret;
+	alt_head = copy_list(bass_note);
+	alt_head->prev = bass_note->prev;
+	old_degree = calc_degree(bass_note->data, root, mode);
+	alt_head->data = apply_steps(old_degree, mode, bass_note->data, THIRD);
+	ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+	delete_list(alt_head);
+	return ret;
+}
+
+Path
+get_default_path(Node *bass_note, Node *mld_note, int root, int mode)
+{
+	Node *alt_head;
+	Path ret;
+
+	alt_head = copy_list(bass_note);
+	alt_head->prev = bass_note->prev;
+	ret = improve_bass_note(alt_head->next, mld_note->next, root, mode);
+	delete_list(alt_head);
+	return ret;
+}
+
 /* 3 choices: */
 /* a) use different chord */
 /* b) invert chord */
@@ -243,96 +364,48 @@ alt_chord_choice(int chord, int mld_degree)
 Path
 improve_bass_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
-	int tmp_note, mld_degree, old_bass_degree, new_bass_degree, 
-	    inverted_note;
-	Node *bass_alt_head_a = NULL, *bass_alt_head_b = NULL,
-	     *bass_alt_head_c = NULL, *def_head = NULL;
-	Path best_path, a_path, b_path, c_path, def_path;
-
-	best_path.head = NULL;
-	a_path.head = NULL;
-	b_path.head = NULL;
-	c_path.head = NULL;
-	def_path.head = NULL;
-
-	best_path.faults = 9999;
-	a_path.faults = 9999;
-	b_path.faults = 9999;
-	c_path.faults = 9999;
-	def_path.faults = 9999;
+	Path a_path, b_path, c_path, def_path, full_path;
 
 	if (bass_note->next == NULL || mld_note->next == NULL) {
-		best_path.head = copy_list_from_tail(bass_note);
-		best_path.faults = count_faults(bass_note, mld_note, root, mode);
-		return best_path;
+		full_path.head = copy_list_from_tail(bass_note);
+		full_path.faults = count_faults(bass_note, mld_note, root, mode);
+		return full_path;
 	}
-	tmp_note = bass_note->data;
-	mld_degree = calc_degree(mld_note->data, root, mode);
-	old_bass_degree = calc_degree(bass_note->data, root, mode);
-
-	/* try different chord */
-	if (mld_degree == I || mld_degree == V) {
-		bass_alt_head_a = copy_list(bass_note);
-		bass_alt_head_a->prev = bass_note->prev;
-
-		new_bass_degree = alt_chord_choice(old_bass_degree, mld_degree);
-		bass_alt_head_a->data = apply_steps(I, mode, root, new_bass_degree);
-		a_path = improve_bass_note(bass_alt_head_a->next, mld_note->next, root, mode);
-
-		/* try inverting different chord */
-		inverted_note = apply_steps(new_bass_degree, mode, bass_alt_head_a->data, THIRD);
-		if (mld_note->data == bass_alt_head_a->data) { /* if both first then try inverting bass */
-			bass_alt_head_b = copy_list(bass_note);
-			bass_alt_head_b->prev = bass_note->prev;
-			bass_alt_head_b->data = apply_steps(new_bass_degree, mode, bass_alt_head_a->data, THIRD);
-			b_path = improve_bass_note(bass_alt_head_b->next, mld_note->next, root, mode);
-		}
-	}
-
-	/* try inverting original chord */
-	inverted_note = apply_steps(old_bass_degree, mode, tmp_note, THIRD);
-	if (mld_note->data == bass_note->data) {
-		bass_alt_head_c = copy_list(bass_note);
-		bass_alt_head_c->prev = bass_note->prev;
-		bass_alt_head_c->data = inverted_note;
-		c_path = improve_bass_note(bass_alt_head_c->next, mld_note->next, root, mode);
-	}
-
-	/* base faults */
-	def_head = copy_list(bass_note);
-	def_head->prev = bass_note->prev;
-	def_path = improve_bass_note(def_head->next, mld_note->next, root, mode);
-
-	if (def_path.faults <= a_path.faults && def_path.faults <= b_path.faults && def_path.faults <= c_path.faults) {
-		best_path = def_path;
+	a_path = get_alt_path(bass_note, mld_note, root, mode);
+	b_path = get_inverted_alt_path(bass_note, mld_note, root, mode);
+	c_path = get_inverted_path(bass_note, mld_note, root, mode);
+	def_path = get_default_path(bass_note, mld_note, root, mode);
+	if (def_path.faults <= a_path.faults && 
+	def_path.faults <= b_path.faults && 
+	def_path.faults <= c_path.faults) {
 		delete_list(a_path.head);
 		delete_list(b_path.head);
 		delete_list(c_path.head);
-	} else if (a_path.faults <= def_path.faults && a_path.faults <= b_path.faults && a_path.faults <= c_path.faults) {
-		best_path = a_path;
+		return def_path;
+	} else if (a_path.faults <= def_path.faults && 
+	a_path.faults <= b_path.faults && 
+	a_path.faults <= c_path.faults) {
 		delete_list(def_path.head);
 		delete_list(b_path.head);
 		delete_list(c_path.head);
-	} else if (b_path.faults <= def_path.faults && b_path.faults <= a_path.faults && b_path.faults <= c_path.faults) {
-		best_path = b_path;
+		return a_path;
+	} else if (b_path.faults <= def_path.faults && 
+	b_path.faults <= a_path.faults && 
+	b_path.faults <= c_path.faults) {
 		delete_list(def_path.head);
 		delete_list(a_path.head);
 		delete_list(c_path.head);
+		return b_path;
 	} else {
-		best_path = c_path;
 		delete_list(def_path.head);
 		delete_list(a_path.head);
 		delete_list(b_path.head);
+		return c_path;
 	}
-	delete_list(def_head);
-	delete_list(bass_alt_head_a);
-	delete_list(bass_alt_head_b);
-	delete_list(bass_alt_head_c);
-	return best_path;
 }
 
 Node *
-generate_bass_line(Node *melody_tail, Node **bass_tail, int root, int mode)
+generate_bass_line(Node *melody_tail, int root, int mode)
 {
 	Node *bass_head = NULL, *melody_note = melody_tail;
 	int bass_note, mld_degree, chord;
@@ -342,8 +415,6 @@ generate_bass_line(Node *melody_tail, Node **bass_tail, int root, int mode)
 		chord = pick_primary_chord(mld_degree);
 		bass_note = apply_steps(0, mode, root, chord);
 		bass_head = prepend_node(bass_head, bass_note);
-		if (*bass_tail == NULL)
-			*bass_tail = bass_head;
 		melody_note = melody_note->prev;
 	}
 	return bass_head;
@@ -355,8 +426,7 @@ main(int argc, char *argv[])
 	char c, buf[BUFLEN];
 	int root = -1, mode = -1, alter;
 	Node *melody_tail = NULL, *melody_head = NULL, *bass_head = NULL,
-	     *bass_tail = NULL, *mid_head = NULL, *new_bass_head = NULL,
-	     *new_bass_tail = NULL;
+	     *mid_head = NULL, *bass_tail = NULL;
 	Path improved_bass;
 
 	c = getchar();
@@ -372,14 +442,14 @@ main(int argc, char *argv[])
 		root = read_tone(c, getchar());
 		scanf("%16s", buf);
 		mode = read_mode(buf);
-		bass_head = generate_bass_line(melody_tail, &bass_tail, root, mode);
+		bass_head = generate_bass_line(melody_tail, root, mode);
 		improved_bass = improve_bass_note(bass_head, melody_head, root, mode);
-		new_bass_head = improved_bass.head;
 		delete_list(bass_head);
-		new_bass_tail = new_bass_head;
-		while (new_bass_tail->next)
-			new_bass_tail = new_bass_tail->next;
-		mid_head = generate_middle_line(new_bass_tail, melody_tail, root, mode);
+		bass_head = improved_bass.head;
+		bass_tail = bass_head;
+		while (bass_tail->next)
+			bass_tail = bass_tail->next;
+		mid_head = generate_middle_line(bass_tail, melody_tail, root, mode);
 		alter = get_correct_accidental(root, mode);
 		print_list(melody_head, TRUE, root, mode);
 		printf("- ");
@@ -391,7 +461,7 @@ main(int argc, char *argv[])
 		print_note(alter, root);
 		putchar(' ');
 		printf("%s\n", MODES[mode]);
-		print_list(new_bass_head, TRUE, root, mode);
+		print_list(bass_head, TRUE, root, mode);
 		printf("- ");
 		print_note(alter, root);
 		putchar(' ');
@@ -399,15 +469,13 @@ main(int argc, char *argv[])
 		putchar('\n');
 		getchar();
 		c = getchar();
-		delete_list(new_bass_head);
+		delete_list(bass_head);
 		delete_list(melody_head);
 		delete_list(mid_head);
 		melody_head = NULL;
 		melody_tail = NULL;
 		bass_head = NULL;
 		bass_tail = NULL;
-		new_bass_head = NULL;
-		new_bass_tail = NULL;
 	}
 	return 0;
 }

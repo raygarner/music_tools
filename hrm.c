@@ -5,7 +5,7 @@
 #include "common.h"
 
 enum { FIRST, SECOND, THIRD, FOURTH, FIFTH, SIXTH };
-enum { FOURTH_TONES = 5, TRITONE = 6, FIFTH_TONES = 7 };
+enum { THIRD_TONES = 4, FOURTH_TONES = 5, TRITONE = 6, FIFTH_TONES = 7 };
 
 typedef struct Path Path;
 struct Path {
@@ -218,9 +218,20 @@ is_siren(const Node *bass_note)
 }
 
 int
+is_big_leap(const Node *bass_note)
+{
+	int i;
+
+	if (bass_note->next == NULL)
+		return 0;
+	i = min_tone_diff(bass_note->data, bass_note->prev->data);
+	return i > THIRD_TONES;
+}
+
+int
 faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
-	int fault = 0;
+	int fault = 0, bass_degree;
 
 	if (!(bass_note->prev && mld_note->prev))
 		return 0;
@@ -230,6 +241,10 @@ faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 	fault += is_parallel_fifth(bass_note, mld_note, root, mode);
 	fault += is_double_leap_same_dir(bass_note);
 	fault += is_siren(bass_note);
+	fault += is_big_leap(bass_note);
+	//fault += bass_note->data == mld_note->data;
+	//bass_degree = calc_degree(bass_note->data, root, mode);
+	//fault += mld_note->data == apply_steps(bass_degree, mode, bass_note->data, FIFTH);
 	return fault;
 }
 
@@ -245,9 +260,9 @@ count_faults(Node *bass_note, Node *mld_note, int root, int mode)
 			range += interval;
 			if (abs(interval) > TONE) {
 				leaps++;
-			} else {
+			} else if (interval != 0){
 				steps++;
-			}
+			} 		
 		}
 		c += faulty_note(bass_note, mld_note, root, mode);
 		bass_note = bass_note->prev;
@@ -255,8 +270,7 @@ count_faults(Node *bass_note, Node *mld_note, int root, int mode)
 	}
 	if (abs(range) > TONES)
 		c += abs(range) - TONES;
-	if (leaps > steps)
-		c += leaps-steps;
+	c += abs(leaps - steps);
 	return c;
 }
 

@@ -1,3 +1,9 @@
+fb
+	show output from crd, mld, hrm
+
+cf
+	show output from crd, mld, hrm
+
 mxml
 	make it able to read output from mld
 	make it able to read output from crd
@@ -6,7 +12,18 @@ mxml
 hrm:
 	check for tritone intervals when adding middle line
 
+crd
+	be able to read altered extensions eg -9, +9, -5, +5
+	be able to read input from crd
+
+program to invert chords
+
+program to extend chords
+
 program to detect paralell fifths, paralell octaves etc
+
+alternate style harmony generator
+	try to simplify
 
 standalone fb usage
 write program to take unsorted musical data such as modes or chords and return it as a list sorted by 'tension' value of each item

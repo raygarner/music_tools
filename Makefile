@@ -3,6 +3,7 @@ SRC = md.c crd.c cf.c fb.c int.c ks.c mld.c hrm.c mxml.c
 EXES = $(SRC:.c=)
 COMMON = common
 MYCFLAGS = -std=c99 -Wall -pedantic
+PROJNAME = music_tools
 
 all: $(EXES)
 
@@ -17,7 +18,7 @@ options:
 	@echo "CC       = $(CC)"
 
 clean:
-	rm -rf $(EXES) *.musicxml music_tools.tar.gz music_tools.zip dist
+	rm -rf $(EXES) *.musicxml $(PROJNAME).tar.gz $(PROJNAME).zip dist
 
 install: all
 	cp -f $(EXES) $(DEST)
@@ -30,10 +31,10 @@ dist:
 	cp -R README TODO Makefile $(COMMON).* $(SRC) dist
 
 tar: dist
-	tar -cf - dist | gzip > music_tools.tar.gz
+	tar -cf - dist | gzip > $(PROJNAME).tar.gz
 
 zip: dist
-	zip -r music_tools.zip dist
+	zip -r $(PROJNAME).zip dist
 
 md:
 	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@

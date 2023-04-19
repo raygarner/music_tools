@@ -3,7 +3,6 @@ SRC = md.c crd.c cf.c fb.c int.c ks.c mld.c hrm.c mxml.c
 EXES = $(SRC:.c=)
 COMMON = common
 MYCFLAGS = -std=c99 -Wall -pedantic
-CC = c99
 
 all: $(EXES)
 
@@ -26,10 +25,16 @@ install: all
 uninstall:
 	@$(foreach EXE,$(EXES), rm -f $(DEST)/$(EXE))
 
-dist: clean
+tar: clean
 	mkdir -p music_tools-dist
 	cp -R TODO Makefile $(COMMON).* $(SRC) music_tools-dist
 	tar -cf - music_tools-dist | gzip > music_tools.tar.gz
+	rm -rf music_tools-dist
+
+zip: clean
+	mkdir -p music_tools-dist
+	cp -R TODO Makefile $(COMMON).* $(SRC) music_tools-dist
+	zip -r music_tools.zip music_tools-dist
 	rm -rf music_tools-dist
 
 md:
@@ -59,4 +64,4 @@ hrm:
 mxml:
 	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
 	
-.PHONY: all full options clean install uninstall dist
+.PHONY: all full options clean install uninstall tar zip

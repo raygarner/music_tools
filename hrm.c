@@ -231,7 +231,7 @@ is_big_leap(const Node *bass_note)
 int
 faulty_note(Node *bass_note, Node *mld_note, int root, int mode)
 {
-	int fault = 0, bass_degree;
+	int fault = 0;
 
 	if (!(bass_note->prev && mld_note->prev))
 		return 0;

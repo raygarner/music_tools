@@ -17,7 +17,7 @@ options:
 	@echo "CC       = $(CC)"
 
 clean:
-	rm -rf $(EXES) *.musicxml music_tools.tar.gz dist
+	rm -rf $(EXES) *.musicxml music_tools.tar.gz music_tools.zip dist
 
 install: all
 	cp -f $(EXES) $(DEST)

@@ -17,7 +17,7 @@ options:
 	@echo "CC       = $(CC)"
 
 clean:
-	rm -f $(EXES) *.musicxml music_tools.tar.gz
+	rm -rf $(EXES) *.musicxml music_tools.tar.gz dist
 
 install: all
 	cp -f $(EXES) $(DEST)
@@ -25,17 +25,15 @@ install: all
 uninstall:
 	@$(foreach EXE,$(EXES), rm -f $(DEST)/$(EXE))
 
-tar: clean
-	mkdir -p music_tools-dist
-	cp -R TODO Makefile $(COMMON).* $(SRC) music_tools-dist
-	tar -cf - music_tools-dist | gzip > music_tools.tar.gz
-	rm -rf music_tools-dist
+dist:
+	mkdir -p dist
+	cp -R README TODO Makefile $(COMMON).* $(SRC) dist
 
-zip: clean
-	mkdir -p music_tools-dist
-	cp -R TODO Makefile $(COMMON).* $(SRC) music_tools-dist
-	zip -r music_tools.zip music_tools-dist
-	rm -rf music_tools-dist
+tar: dist
+	tar -cf - dist | gzip > music_tools.tar.gz
+
+zip: dist
+	zip -r music_tools.zip dist
 
 md:
 	$(CC) $(MYCFLAGS) $@.c $(COMMON).c -o $@
